@@ -95,3 +95,8 @@ do
 	echo "Number of files downloaded: " $DOWNLAODED "/" $COUNT
 done
 
+# Copy all dataset paths to path.txt
+for x in `ls import/`; 
+do 
+	realpath import/$x; 
+done > path.txt
