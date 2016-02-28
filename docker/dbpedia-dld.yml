@@ -1,0 +1,17 @@
+datasets:
+    dbpedia-datasets:
+        file_list: "paths.relative"
+
+components:
+    store:
+        image: aksw/dld-store-virtuoso7
+        ports: ["8891:8890"]
+        environment:
+            PWDDBA: dbpedia
+    load:
+        image: aksw/dld-load-virtuoso
+        environment:
+            DLD_DEV:
+
+settings:
+    default_graph: "http://dbpedia.org"
