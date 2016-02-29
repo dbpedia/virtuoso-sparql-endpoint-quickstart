@@ -12,6 +12,7 @@ components:
         image: aksw/dld-load-virtuoso
         environment:
             DLD_DEV:
-
+            CONNECTION_ATTEMPS: 60
+              
 settings:
     default_graph: "http://dbpedia.org"
