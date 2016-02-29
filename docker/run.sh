@@ -1,5 +1,6 @@
 #!/bin/bash -eu
 
+${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x
 
 DOWNLOAD_SCRIPT_NAME='download.sh'
@@ -40,12 +41,10 @@ run-dld() {
 }
 
 
-echo "pre-shifts: $* or $@"
 RUN_CMD=$1
 #shift away /run.sh args got use the rest as args for the download script
 shift
 
-echo "dl arguments: $* or $@"
 case $RUN_CMD in
     prepare)
         download-files "$@"
@@ -58,7 +57,7 @@ case $RUN_CMD in
         run-dld
     ;;
     *)
-        echo "unknown predefined action (action choice: run-all, download, run-dld)"
+        echo "unknown predefined action (action choice: prepare, download, run-dld)"
         exit 1
     ;;
 esac

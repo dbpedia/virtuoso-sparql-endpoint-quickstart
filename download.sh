@@ -9,8 +9,6 @@ BASEURL=http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.
 LANG="null"
 DIRECTORY="downloads"
 
-echo "debug args: '$@'"
-
 # Check if import directory exist or else make one
 if [ ! -d "$DIRECTORY" ]; then
     # Control will enter here if $DIRECTORY doesn't exist.
