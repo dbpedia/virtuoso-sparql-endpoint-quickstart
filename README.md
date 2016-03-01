@@ -15,13 +15,14 @@ inside a Docker container
    (e.g. by browsing the [DBpedia Downloa d Server](http://downloads.dbpedia.org/2015-04/core-i18n/))
 1. If you want a short-lived container that you can terminate directly using `Ctrl + C`, run:
 
-        $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z  -v /dld-dbpedia-wd/models/ --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
+        $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
 
    replacing `{{lang code}}` with the chosen language. If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
 
-        $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock:z  -v /dld-dbpedia-wd/models/ --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}
+        $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}
    
    (i.e. replace the `-ti --rm` switches with a `-d` switch, please consult the [Docker Run Reference](https://docs.docker.com/engine/reference/run/) for details)
+   N.B.: Currently it is required the container has exactly the name `dld-dbpedia`, we hope to get rid of this constraint soon. 
    
 ### What happens?
  * a download script uses [DataId](https://github.com/dbpedia/dataid)
@@ -51,7 +52,7 @@ For example, to keep the downloads for the German DBpedia version
         
 followed by 
 
-        $ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock:z -v /opt/dbpedia/data/de:/dbpedia-download:z -v /dld-dbpedia-wd/models/  --name dld-dbpedia aksw/dld-dist-dbpedia run-dld
+        $ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock:z -v /opt/dbpedia/data/de:/dbpedia-download:z --name dld-dbpedia aksw/dld-dist-dbpedia run-dld
 
 to start a VOS import setup using the previously downloaded data.
 
