@@ -1,30 +1,33 @@
-#!/bin/bash
+#!/bin/bash -eu
+
+${DLD_DEV:=}
+[[ ! -z "$DLD_DEV" ]] && set -x
 
 # Set default variables
 GENERIC_FILENAME=2015-04_dataid_lang.ttl
 BASEURL=http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl
 LANG="null"
-DIRECTORY="import"
+DIRECTORY="downloads"
 
 # Check if import directory exist or else make one
 if [ ! -d "$DIRECTORY" ]; then
-  	# Control will enter here if $DIRECTORY doesn't exist.
-  	mkdir $DIRECTORY
-  	if [[ $? != 0 ]]; then
-		echo "Failed to make import directory. Delete any file named import for the script to work."
-		exit
-	fi
+    # Control will enter here if $DIRECTORY doesn't exist.
+    mkdir "$DIRECTORY"
+    if [[ $? != 0 ]]; then
+    echo "Failed to make import directory. Delete any file named $DIRECTORY for the script to work."
+    exit
+  fi
 fi
 # Help function to display usage iunstructions
 function help 
 {
-	echo "Usage: $./upload.sh [options]
-	-l or --language : Set the language for which data-id file is to be downloaded [Required]
-	-b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl]
-	-t or --rdftype  : Set rdf format to download for datasets, [def: .ttl]
-	-h or --help     : Display this help text
+  echo "Usage: $./upload.sh [options]
+  -l or --language : Set the language for which data-id file is to be downloaded [Required]
+  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl]
+  -t or --rdftype  : Set rdf format to download for datasets, [def: .ttl]
+  -h or --help     : Display this help text
 
-	-->Make sure docker daemon is running before launching the script"
+  -->Make sure docker daemon is running before launching the script"
 }
 
 # Setting all key value pairs specified as arguments to the script
@@ -53,7 +56,7 @@ case $key in
     DEFAULT=YES
     ;;
     *)
-            # unknown option
+    echo "ERROR: unknown option '$key'"
     ;;
 esac
 shift # past argument or value
@@ -61,12 +64,12 @@ done
 
 # Language parameter is mandatory. Check if specified or exit the script
 if [ "$LANG" == "null" ]; then
-	echo "Usage: $./upload.sh --help"
-	exit
+  echo "Usage: $./upload.sh --help"
+  exit
 fi
 
 # Display of creativity
-figlet -t Smart Data-id Upload
+figlet -t Smart Data-Id Download
 
 # Fetch the data-id file using the baseurl and the language specified
 echo $BASEURL | sed "s|lang|$LANG|g" | xargs wget 
@@ -87,16 +90,18 @@ DOWNLAODED=0
 # Download all the datasets and store them in import directory
 for i in `cat downloadURLs.txt`; 
 do
-	echo "Download URL: " $i
-	wget -P $PWD/import/ $i
-	if [[ $? == 0 ]]; then
-		DOWNLAODED=$((DOWNLAODED+1))
-	fi
-	echo "Number of files downloaded: " $DOWNLAODED "/" $COUNT
+  echo "Download URL: " $i
+  wget -P "$PWD/$DIRECTORY/" $i
+  if [[ $? == 0 ]]; then
+    DOWNLAODED=$((DOWNLAODED+1))
+  fi
+  echo "Number of files downloaded: " $DOWNLAODED "/" $COUNT
 done
 
-# Copy all dataset paths to path.txt
-for x in `ls import/`; 
+# Write absolute  dataset paths to paths.absolute
+for f in `ls $DIRECTORY/`; 
 do 
-	realpath import/$x; 
-done > path.txt
+  realpath "$DIRECTORY/$f";
+done > paths.absolute
+
+find "$DIRECTORY" -type f > paths.relative
