@@ -25,7 +25,7 @@ function help
   echo "Usage: $./download.sh [options]
   -l or --language : Set the language for which data-id file is to be downloaded [Required]
   -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl]
-  -t or --rdftype  : Set rdf format to download for datasets, [def: .ttl]
+  -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
   -h or --help     : Display this help text"
 }
 
@@ -70,11 +70,14 @@ fi
 # Display of creativity
 figlet -t Smart Data-Id Download
 
-# Fetch the data-id file using the baseurl and the language specified
-echo $BASEURL | sed "s|lang|$LANG|g" | xargs wget 
-
 # Get the filename of the above downloaded data-id file
 FILENAME=$( echo $GENERIC_FILENAME | sed "s|lang|$LANG|" )
+if [ -f "$FILENAME" ]; then
+  echo "Will use the existing $FILENAME file"
+else
+  # Fetch the data-id file using the baseurl and the language specified
+  echo $BASEURL | sed "s|lang|$LANG|g" | xargs wget
+fi 
 
 # Set the rdf filter
 RDFFILTER="$RDFTYPE.bz2"
