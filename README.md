@@ -12,7 +12,7 @@ inside a Docker container
 1. ensure your Docker Engine is up and running (and accepting
    connection on the `/var/run/docker.sock` socket file)
 1. choose the DBpedia language version which you want to deploy
-   (e.g. by browsing the [DBpedia Downloa d Server](http://downloads.dbpedia.org/2015-04/core-i18n/))
+   (e.g. by browsing the [DBpedia Downloa d Server](http://downloads.dbpedia.org/2015-10/core-i18n/))
 1. If you want a short-lived container that you can terminate directly using `Ctrl + C`, run:
 
         $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
@@ -61,7 +61,7 @@ to start a VOS import setup using the previously downloaded data.
 `$./download.sh [options]` or `$ docker run [...] dld-dist-dbpedia [download|prepare] [options]`
 
 	-l or --language : Set the language for which data-id file is to be downloaded [Required]
-	-b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl]
+	-b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
 	-t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
 	-h or --help     : Display this help text
 
