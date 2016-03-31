@@ -4,8 +4,8 @@ ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x
 
 # Set default variables
-GENERIC_FILENAME="2015-04_dataid_lang.ttl"
-BASEURL="http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl"
+GENERIC_FILENAME="2015-10_dataid_lang.ttl"
+BASEURL="http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl"
 LANG="null"
 DIRECTORY="downloads"
 
@@ -24,7 +24,7 @@ function help
 {
   echo "Usage: $./download.sh [options]
   -l or --language : Set the language for which data-id file is to be downloaded [Required]
-  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl]
+  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
   -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
   -h or --help     : Display this help text"
 }
