@@ -7,6 +7,7 @@ ${DLD_DEV:=}
 GENERIC_FILENAME="2015-10_dataid_lang.ttl"
 BASEURL="http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl"
 LANG="null"
+RDFTYPE="ttl"
 DIRECTORY="downloads"
 
 # Check if downloads directory exist or else make one
@@ -24,8 +25,8 @@ function help
 {
   echo "Usage: $./download.sh [options]
   -l or --language : Set the language for which data-id file is to be downloaded [Required]
-  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
-  -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
+  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: ${BASEURL}]
+  -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ${RDFTYPE}]
   -h or --help     : Display this help text"
 }
 
