@@ -8,6 +8,7 @@ GENERIC_FILENAME="2015-10_dataid_lang.ttl"
 BASEURL="http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl"
 LANG="null"
 DIRECTORY="downloads"
+RDFTYPE="ttl"
 
 # Check if downloads directory exist or else make one
 if [ ! -d "$DIRECTORY" ]; then
@@ -98,7 +99,7 @@ DOWNLAODED=0
 for i in `cat downloadURLs.txt`; 
 do
   echo "Download URL: " $i
-  wget -P "$PWD/$DIRECTORY/" $i
+  wget -N --continue -P "$PWD/$DIRECTORY/" $i
   if [[ $? == 0 ]]; then
     DOWNLAODED=$((DOWNLAODED+1))
   fi
