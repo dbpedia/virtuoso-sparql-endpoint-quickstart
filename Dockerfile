@@ -2,7 +2,7 @@ FROM aksw/dld-bootstrap
 
 MAINTAINER Markus Ackermann <ackermann@informatik.uni-leipzig.de>
 
-RUN dnf install -y findutils wget figlet
+RUN dnf install -y findutils wget
 
 COPY docker/run.sh docker/dbpedia-dld.yml /download.sh /
 

@@ -67,8 +67,10 @@ if [ "$LANG" == "null" ]; then
   exit
 fi
 
-# Display of creativity
-figlet -t Smart Data-Id Download
+# Display of creativity no more
+echo "......................"
+echo "Dockerized-DBpedia"
+echo "......................"
 
 # Get the filename of the above downloaded data-id file
 FILENAME=$( echo $GENERIC_FILENAME | sed "s|lang|$LANG|" )
