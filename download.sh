@@ -6,6 +6,7 @@ ${DLD_DEV:=}
 # Set default variables
 GENERIC_FILENAME="2015-10_dataid_lang.ttl"
 BASEURL="http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl"
+ONTOLOGY_FILE="http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt"
 LANG="null"
 DIRECTORY="downloads"
 RDFTYPE="ttl"
@@ -105,6 +106,9 @@ do
   fi
   echo "Number of files downloaded: " $DOWNLAODED "/" $COUNT
 done
+
+# Download the ontology file
+wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt
 
 # Write absolute  dataset paths to paths.absolute
 for f in `ls $DIRECTORY/`; 
