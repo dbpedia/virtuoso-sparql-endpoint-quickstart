@@ -10,6 +10,7 @@ ONTOLOGY_FILE="http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt"
 LANG="null"
 DIRECTORY="downloads"
 RDFTYPE="ttl"
+CORE="null"
 
 # Check if downloads directory exist or else make one
 if [ ! -d "$DIRECTORY" ]; then
@@ -21,14 +22,33 @@ if [ ! -d "$DIRECTORY" ]; then
   fi
 fi
 
-# Help function to display usage iunstructions
+# Help function to display usage instructions
 function help 
 {
   echo "Usage: $./download.sh [options]
   -l or --language : Set the language for which data-id file is to be downloaded [Required]
-  -b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
-  -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
+
+  -b or --baseurl  : Set the baseurl for fetching the data-id file 
+                     [Default: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
+
+  -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/2015-10/core/]
+                     [Default recursive level: 1]
+
+  -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, 
+                     [Default: ttl]
+
   -h or --help     : Display this help text"
+  echo ""
+  echo "Ex: 
+  1. Download datasets for english language in ttl format using data-id: http://downloads.dbpedia.org/2015-10/core-i18n/en/2015-10_dataid_en.ttl: 
+        $./download.sh -l en -t ttl
+
+  2. Download dataset from DBpedia core only {No data-id available currently}
+        $./download.sh -c 1
+
+  3. Download datasets for both the above mentioned examples but using 2015-04 base url:
+        $./download.sh -l en -t ttl -c 1 -b http://downloads.dbpedia.org/2015-04/core-i18n/lang/2015-04_dataid_lang.ttl
+  "
 }
 
 # Setting all key value pairs specified as arguments to the script
@@ -40,6 +60,10 @@ case $key in
     -l|--language)
     LANG="$2"
     shift # past language argument
+    ;;
+    -c|--core)
+    CORE="$2"
+    shift # past baseurl argument
     ;;
     -b|--baseurl)
     BASEURL="$2"
@@ -63,17 +87,50 @@ esac
 shift # past argument or value
 done
 
-# Language parameter is mandatory. Check if specified or exit the script
+# Display of creativity no more
+function startup
+{
+  echo "......................"
+  echo "Dockerized-DBpedia"
+  echo "......................"
+}
+
+# Write absolute dataset paths to paths.absolute
+function loadPaths
+{
+  for f in `ls $DIRECTORY/`; 
+  do 
+    realpath "$DIRECTORY/$f";
+  done > paths.absolute
+
+  find "$DIRECTORY" -type f > paths.relative
+}
+
+# If only core directory is to be downloaded
+function coredump
+{
+  startup
+
+  # Download the core directory
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2015-10/core/ 
+  
+  # Download the ontology file
+  wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt
+  loadPaths
+}
+
+# Language parameter is mandatory if core parameter not set. Check if specified or exit the script
 if [ "$LANG" == "null" ]; then
-  echo "Usage: $./download.sh --help"
-  exit
+  if [ "$CORE" == "null" ]; then
+    echo "Usage: $./download.sh --help"
+    exit 0;
+  else
+    coredump
+    exit 0;
+  fi
 fi
 
-# Display of creativity no more
-echo "......................"
-echo "Dockerized-DBpedia"
-echo "......................"
-
+startup
 # Get the filename of the above downloaded data-id file
 FILENAME=$( echo $GENERIC_FILENAME | sed "s|lang|$LANG|" )
 if [ -f "$FILENAME" ]; then
@@ -110,10 +167,10 @@ done
 # Download the ontology file
 wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2015-10/dbpedia_2015-10.nt
 
-# Write absolute  dataset paths to paths.absolute
-for f in `ls $DIRECTORY/`; 
-do 
-  realpath "$DIRECTORY/$f";
-done > paths.absolute
+# Download the core directory if core parameter is set
+if [ "$CORE" != "null" ]; then
+  # Download the core directory
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2015-10/core/
+fi
 
-find "$DIRECTORY" -type f > paths.relative
+loadPaths
