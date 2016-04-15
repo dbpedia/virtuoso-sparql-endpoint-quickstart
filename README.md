@@ -17,7 +17,7 @@ inside a Docker container
 
         $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
 
-   replacing `{{lang code}}` with the chosen language. If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
+   replacing `{{lang code}}` with the chosen language (use `core` as language if you want an exact copy of the data in http://dbpedia.org/sparql, 'en' is slightly different). If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
 
         $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}
    
@@ -60,10 +60,18 @@ to start a VOS import setup using the previously downloaded data.
 ### Download Script Options (the `download` sub-command)
 `$./download.sh [options]` or `$ docker run [...] dld-dist-dbpedia [download|prepare] [options]`
 
-	-l or --language : Set the language for which data-id file is to be downloaded [Required]
-	-b or --baseurl  : Set the baseurl for fetching the data-id file [def: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
-	-t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, [def: ttl]
-	-h or --help     : Display this help text
+    -l or --language : Set the language for which data-id file is to be downloaded [Required]
+
+    -b or --baseurl  : Set the baseurl for fetching the data-id file 
+                       [Default: http://downloads.dbpedia.org/2015-10/core-i18n/lang/2015-10_dataid_lang.ttl]
+
+    -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/2015-10/core/]
+                       [Default recursive level: 1]
+
+    -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, 
+                       [Default: ttl]
+
+    -h or --help     : Display this help text"
 
 ### Caveats and Remarks
  * the `:z` suffix for host filesystem mount points is only required
