@@ -128,9 +128,14 @@ if [ "$LANG" == "null" ]; then
     coredump
     exit 0;
   fi
+elif [ "$LANG" == "core" ]; then
+  coredump
+  exit 0;
 fi
 
+# Call the startup function
 startup
+
 # Get the filename of the above downloaded data-id file
 FILENAME=$( echo $GENERIC_FILENAME | sed "s|lang|$LANG|" )
 if [ -f "$FILENAME" ]; then
