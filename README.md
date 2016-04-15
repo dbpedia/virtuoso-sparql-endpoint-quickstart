@@ -17,7 +17,7 @@ inside a Docker container
 
         $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
 
-   replacing `{{lang code}}` with the chosen language. If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
+   replacing `{{lang code}}` with the chosen language (use `core` as language if you want an exact copy of the data in http://dbpedia.org/sparql, 'en' is slightly different). If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
 
         $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}
    
