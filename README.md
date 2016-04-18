@@ -12,7 +12,7 @@ inside a Docker container
 1. ensure your Docker Engine is up and running (and accepting
    connection on the `/var/run/docker.sock` socket file)
 1. choose the DBpedia language version which you want to deploy
-   (e.g. by browsing the [DBpedia Downloa d Server](http://downloads.dbpedia.org/2015-10/core-i18n/))
+   (e.g. by browsing the [DBpedia Download Server](http://downloads.dbpedia.org/2015-10/core-i18n/))
 1. If you want a short-lived container that you can terminate directly using `Ctrl + C`, run:
 
         $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
