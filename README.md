@@ -23,7 +23,11 @@ inside a Docker container
    
    (i.e. replace the `-ti --rm` switches with a `-d` switch, please consult the [Docker Run Reference](https://docs.docker.com/engine/reference/run/) for details)
    N.B.: Currently it is required the container has exactly the name `dld-dbpedia`, we hope to get rid of this constraint soon. 
-   
+
+1. SPARQL query web interface can be accessed at http://localhost:8891 once the downloading and bulk loading task are finished.
+
+ You can either use wget to get query results or directly make queries on the interface and select the desired output format.
+
 ### What happens?
  * a download script uses [DataId](https://github.com/dbpedia/dataid)
    meta-data for the chosen language to determine which distribution
