@@ -67,7 +67,7 @@ to start a VOS import setup using the previously downloaded data.
     -l or --language : Set the language for which data-id file is to be downloaded [Required]
 
     -b or --baseurl  : Set the baseurl for fetching the data-id file 
-                       [Default: http://downloads.dbpedia.org/2016-04/core-i18n/lang/2016-04_dataid_lang.ttl]
+                       [Default: http://downloads.dbpedia.org/2016-04/core-i18n/{lang}/2016-04_dataid_{lang}.ttl]
 
     -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/2016-04/core/]
                        [Default recursive level: 1]
