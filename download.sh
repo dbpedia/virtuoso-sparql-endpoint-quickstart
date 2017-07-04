@@ -4,9 +4,10 @@ ${DLD_DEV:=}
 [[ ! -z "$DLD_DEV" ]] && set -x
 
 # Set default variables
-GENERIC_FILENAME="2016-04_dataid_lang.ttl"
-BASEURL="http://downloads.dbpedia.org/2016-04/core-i18n/lang/2016-04_dataid_lang.ttl"
-ONTOLOGY_FILE="http://downloads.dbpedia.org/2016-04/dbpedia_2016-04.nt"
+VERSION="2016-10"
+GENERIC_FILENAME="$VERSION_dataid_lang.ttl"
+BASEURL="http://downloads.dbpedia.org/$VERSION/core-i18n/lang/$VERSION_dataid_lang.ttl"
+ONTOLOGY_FILE="http://downloads.dbpedia.org/$VERSION/dbpedia_$VERSION.nt"
 LANG="null"
 DIRECTORY="downloads"
 RDFTYPE="ttl"
@@ -29,9 +30,9 @@ function help
   -l or --language : Set the language for which data-id file is to be downloaded [Required]
 
   -b or --baseurl  : Set the baseurl for fetching the data-id file 
-                     [Default: http://downloads.dbpedia.org/2016-04/core-i18n/lang/2016-04_dataid_lang.ttl]
+                     [Default: $BASEURL]
 
-  -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/2016-04/core/]
+  -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/$VERSION/core/]
                      [Default recursive level: 1]
 
   -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, 
@@ -40,14 +41,14 @@ function help
   -h or --help     : Display this help text"
   echo ""
   echo "Ex: 
-  1. Download datasets for english language in ttl format using data-id: http://downloads.dbpedia.org/2016-04/core-i18n/en/2016-04_dataid_en.ttl: 
+  1. Download datasets for english language in ttl format using data-id: $BASEURL: 
         $./download.sh -l en -t ttl
 
   2. Download dataset from DBpedia core only {No data-id available currently}
         $./download.sh -c 1
 
-  3. Download datasets for both the above mentioned examples but using 2016-04 base url:
-        $./download.sh -l en -t ttl -c 1 -b http://downloads.dbpedia.org/2016-04/core-i18n/lang/2016-04_dataid_lang.ttl
+  3. Download datasets for both the above mentioned examples but using base url:
+        $./download.sh -l en -t ttl -c 1 -b $BASEURL
   "
 }
 
@@ -112,10 +113,11 @@ function coredump
   startup
 
   # Download the core directory
-  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2016-04/core/ 
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/core/ 
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/links/
   
   # Download the ontology file
-  wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2016-04/dbpedia_2016-04.nt
+  wget -P "$PWD/$DIRECTORY" $ONTOLOGY_FILE
   loadPaths
 }
 
@@ -170,12 +172,13 @@ do
 done
 
 # Download the ontology file
-wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2016-04/dbpedia_2016-04.nt
+wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/dbpedia_$VERSION.nt
 
 # Download the core directory if core parameter is set
 if [ "$CORE" != "null" ]; then
   # Download the core directory
-  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/2016-04/core/
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/core/
+  wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/links/
 fi
 
 loadPaths
