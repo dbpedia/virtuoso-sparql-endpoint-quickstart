@@ -5,8 +5,8 @@ ${DLD_DEV:=}
 
 # Set default variables
 VERSION="2016-10"
-GENERIC_FILENAME="$VERSION_dataid_lang.ttl"
-BASEURL="http://downloads.dbpedia.org/$VERSION/core-i18n/lang/$VERSION_dataid_lang.ttl"
+GENERIC_FILENAME="${VERSION}_dataid_lang.ttl"
+BASEURL="http://downloads.dbpedia.org/$VERSION/core-i18n/lang/${VERSION}_dataid_lang.ttl"
 ONTOLOGY_FILE="http://downloads.dbpedia.org/$VERSION/dbpedia_$VERSION.nt"
 LANG="null"
 DIRECTORY="downloads"
