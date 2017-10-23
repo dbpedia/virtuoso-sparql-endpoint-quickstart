@@ -12,6 +12,8 @@ LANG="null"
 DIRECTORY="downloads"
 RDFTYPE="ttl"
 CORE="null"
+GRAPH="null"
+MEDIA_TYPE="null"
 
 # Check if downloads directory exist or else make one
 if [ ! -d "$DIRECTORY" ]; then
@@ -32,7 +34,7 @@ function help
   -b or --baseurl  : Set the baseurl for fetching the data-id file 
                      [Default: $BASEURL]
 
-  -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/$VERSION/core/]
+  -c or --core     : Must specify recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/$VERSION/core/]
                      [Default recursive level: 1]
 
   -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql}, 
@@ -40,6 +42,7 @@ function help
 
   -h or --help     : Display this help text"
   echo ""
+# TODO: not sure whether or for what Ex 3 is relevant, could clean up script if not needed
   echo "Ex: 
   1. Download datasets for english language in ttl format using data-id: $BASEURL: 
         $./download.sh -l en -t ttl
@@ -64,7 +67,7 @@ case $key in
     ;;
     -c|--core)
     CORE="$2"
-    shift # past baseurl argument
+    shift # past core argument
     ;;
     -b|--baseurl)
     BASEURL="$2"
@@ -117,13 +120,14 @@ function coredump
   wget -r -l1 --no-parent -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/links/
   
   # Download the ontology file
-  wget -P "$PWD/$DIRECTORY" $ONTOLOGY_FILE
+  wget -N --continue -P "$PWD/$DIRECTORY" $ONTOLOGY_FILE
   loadPaths
 }
 
 # Language parameter is mandatory if core parameter not set. Check if specified or exit the script
 if [ "$LANG" == "null" ]; then
   if [ "$CORE" == "null" ]; then
+    echo "Language parameter is mandatory if core parameter not set."
     echo "Usage: $./download.sh --help"
     exit 0;
   else
@@ -133,6 +137,24 @@ if [ "$LANG" == "null" ]; then
 elif [ "$LANG" == "core" ]; then
   coredump
   exit 0;
+fi
+
+# RDF type needs to be ttl or tql
+if [ "$RDFTYPE" == "ttl" ]; then
+  MEDIA_TYPE="MediaType_turtle_x-bzip2"
+elif [ "$RDFTYPE" == "tql" ]; then
+  MEDIA_TYPE="MediaType_n-quads_x-bzip2"
+else
+  echo "Unsupported RDF format."
+  echo "Usage: $./download.sh --help"
+  exit 0;
+fi
+
+# RDF type needs to be ttl or tql
+if [ "$LANG" == "en" ]; then
+  GRAPH="http://dbpedia.org"
+else
+  GRAPH="http://$LANG.dbpedia.org"
 fi
 
 # Call the startup function
@@ -151,7 +173,8 @@ fi
 RDFFILTER="$RDFTYPE.bz2"
 
 # Parse the file to get all download urls and store them in the downloadURLs.txt file
-cat $FILENAME | grep 'dcat:downloadURL' | grep "$RDFFILTER" | sed -r -e 's|\s+dcat:downloadURL\s+<||' -e 's|> ;||' > downloadURLs.txt
+#cat $FILENAME | grep 'dcat:downloadURL' | grep "$RDFFILTER" | sed -r -e 's|\s+dcat:downloadURL\s+<||' -e 's|> ;||' > downloadURLs.txt
+roqet -D $FILENAME -e "PREFIX dataid: <http://dataid.dbpedia.org/ns/core#> PREFIX dataid-mt: <http://dataid.dbpedia.org/ns/mt#> PREFIX dcat: <http://www.w3.org/ns/dcat#> PREFIX sd: <http://www.w3.org/ns/sparql-service-description#> SELECT ?url WHERE {[] dcat:downloadURL ?url ; dcat:mediaType dataid-mt:$MEDIA_TYPE ; dataid:isDistributionOf ?ds . ?ds sd:defaultGraph <$GRAPH> .}" -r csv | tail -n +2 | tr -d '\r' > downloadURLs.txt
 
 # Get the count of number of files to be downloaded
 COUNT=$( wc -l downloadURLs.txt | cut -d' ' -f1 )
@@ -172,7 +195,7 @@ do
 done
 
 # Download the ontology file
-wget -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/dbpedia_$VERSION.nt
+wget -N --continue -P "$PWD/$DIRECTORY" http://downloads.dbpedia.org/$VERSION/dbpedia_$VERSION.nt
 
 # Download the core directory if core parameter is set
 if [ "$CORE" != "null" ]; then
