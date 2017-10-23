@@ -43,7 +43,7 @@ The `dld-dist-dbpedia` image also allows you to re-use distribution
 data downloaded by it from a previous invocation. To this end, you
 should mount a host system directory as the place to persistently keep
 the download files
-(`-v /host/path/to/dbpedia-downloado:/dbpedia-download:z`) 
+(`-v /host/path/to/dbpedia-download:/dbpedia-download:z`) 
 and first run the `dld-dist-dbpedia` image with the command `download`
 followed by download switches. After that, you can re-use the
 downloads in your host filesystem to re-create the VOS setup several
