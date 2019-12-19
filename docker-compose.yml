@@ -1,0 +1,30 @@
+version: '3'
+services:
+  download:
+    image: databus-download-min:latest
+    environment:
+      COLLECTION_URI: https://databus.dbpedia.org/jan/collections/lookup
+      SRC_VOLUME_DIR: /root/data
+    volumes:
+      - ./download:/root/data
+  store:
+    image: openlink/virtuoso-opensource-7
+    ports: ["8891:8890","1111:1111"]
+    environment:
+      DBA_PASSWORD: dbpedia
+    volumes:
+      - ./database:/opt/virtuoso-opensource/database
+      - ./import:/usr/share/proj
+  load:
+    image: virtuoso-loader:latest
+    environment:
+      STORE_NAME: store
+      STORE_DBA_PASSWORD: dbpedia
+      STORE_CONNECTION_TIMEOUT: 60
+      STORE_IMPORT_VOLUME_DIR: /usr/share/proj
+      DATA_DOWNLOAD_TIMEOUT: 60
+      SRC_VOLUME_DIR: /root/data
+      IMPORT_VOLUME_DIR: /root/import
+    volumes:
+      - ./download:/root/data
+      - ./import:/root/import
