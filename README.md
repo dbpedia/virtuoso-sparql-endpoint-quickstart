@@ -9,100 +9,73 @@ All you need to do is run the `dockerized-dbpedia.sh` script in the project root
 * Databus Download Client
 * Loader/Installer
 
+Before running the script you should configure these containers in the `docker-compose.yml`.
+
 ### OpenLink VOS Instance
 
-You can read the full documentation of the docker image [here](https://hub.docker.com/r/openlink/virtuoso-opensource-7). The image requires the environment variable `DBA_PASSWORD` to set the admin password of the database.
-Additionally the docker-compose defines two volumes, one pointing to the database folder for persistence, the other pointing to the data import path.
+You can read the full documentation of the docker image [here](https://hub.docker.com/r/openlink/virtuoso-opensource-7). The image requires one environment variable to set the admin password of the database:
+* `DBA_PASSWORD`: Your database admin password
+
+This password is only set when a new database is created. The example docker-compose mounts a folder to the internal database directory for persistence. Note that this folder needs to be cleared in order to change the password via docker-compose.
+
+The second volume specified in the docker-compose file connects the downloads folder to a directory in the container that is
+accessible by the virtuoso load script. Accessible paths are set in the internal `virtuoso.ini` file (`DirsAllowed`). As the
+docker-compose uses the vanilla settings of the image the `downloads` folder is mounted to `/usr/share/proj` which is in the
+`DirsAllowed` per default.
 
 ### Databus Download Client
 
-The download client requires two environment variables:
-* COLLECTION_URI: The URI of a databus collection. Starting from release 2019-08-30 the DBpedia Releases will be published as databus collections which can be found [here](https://databus.dbpedia.org/dbpedia/collections/)
-* SRC_VOLUME_DIR:
+This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client).
+* `TARGET_DIR`: The target directory for the downloaded files
+* `COLLECTION_URI`: A collection URI on the DBpedia Databus
 
-The previously built Loader waits for the download
+### Loader/Installer
 
-## Usage as Docker Image
+You can build the loader/installer container by running
+```
+cd ./dbpedia-loader
+docker build -t dbpedia-virtuoso-loader .
+```
 
-### Requirements
+You can configure the container with the following environment variables:
+* `STORE_DATA_DIR`: The directory of the VOS instance that the `downloads` folder is mounted to (`/usr/share/proj` by default)
+* `STORE_DBA_PASSWORD`: The admin password specified in the VOS instance (`DBA_PASSWORD` variable)
+* `DATA_DIR`: The directory of this container that the `downloads` folder is mounted to.
+* `DOMAIN`: The domain of your resource identifiers
+* `[OPTIONAL] DATA_DOWNLOAD_TIMEOUT`: The amount of seconds until the loader process stops waiting for the download to finish.
+* `[OPTIONAL] STORE_CONNECTION_TIMEOUT`: The amount of seconds until the loader process stops waiting for the store to boot up.
 
- * Docker Engine 1.9.1 or newer
+## Example
 
-### Quickstart
-1. ensure your Docker Engine is up and running (and accepting
-   connection on the `/var/run/docker.sock` socket file)
-1. choose the DBpedia language version which you want to deploy
-   (e.g. by browsing the [DBpedia Download Server](http://downloads.dbpedia.org/2016-04/core-i18n/))
-1. If you want a short-lived container that you can terminate directly using `Ctrl + C`, run:
+The following `docker-compose.yml` will start a VOS instance with the DBpedia Plugin installed containing the data
+specified in the https://databus.dbpedia.org/kurzum/collections/agro collection (in this case mapping-based geo-data in Russian).
+Since the resource identifiers are Russian dbpedia identifiers the `DOMAIN` variable is set to "http://ru.dbpedia.org".
 
-        $ docker run -ti --rm -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}   
-
-   replacing `{{lang code}}` with the chosen language (use `core` as language if you want an exact copy of the data in http://dbpedia.org/sparql, 'en' is slightly different). If you, alternatively, would like the triple store to persist independent from the shell session you start it in, use:
-
-        $ docker run -d -v /var/run/docker.sock:/var/run/docker.sock:z --name dld-dbpedia aksw/dld-dist-dbpedia prepare  -l {{lang-code}}
-
-   (i.e. replace the `-ti --rm` switches with a `-d` switch, please consult the [Docker Run Reference](https://docs.docker.com/engine/reference/run/) for details)
-   N.B.: Currently it is required the container has exactly the name `dld-dbpedia`, we hope to get rid of this constraint soon.
-
-1. SPARQL query web interface can be accessed at http://localhost:8891 once the downloading and bulk loading task are finished.
-
- You can either use wget to get query results or directly make queries on the interface and select the desired output format.
-
-### What happens?
- * a download script uses [DataId](https://github.com/dbpedia/dataid)
-   meta-data for the chosen language to determine which distribution
-   files must be downloaded and does so
- * the containerized version of the
-   [DLD](https://dockerizing.github.io/) Bootstrap tool is used to
-   configure and run a suitable orchestration of a VOS container and a
-   bulk load container initiating efficient import into the RDF store
-
-### Re-Using Previous Downloads
-
-The `dld-dist-dbpedia` image also allows you to re-use distribution
-data downloaded by it from a previous invocation. To this end, you
-should mount a host system directory as the place to persistently keep
-the download files
-(`-v /host/path/to/dbpedia-download:/dbpedia-download:z`)
-and first run the `dld-dist-dbpedia` image with the command `download`
-followed by download switches. After that, you can re-use the
-downloads in your host filesystem to re-create the VOS setup several
-times.
-
-For example, to keep the downloads for the German DBpedia version
-(`de`) in `/opt/dbpedia-data/de` in your host filesystem, first invoke
-
-        $ docker run --rm -v /opt/dbpedia/data/de:/dbpedia-download:z aksw/dld-dist-dbpedia download  -l de
-
-followed by
-
-        $ docker run -ti -v /var/run/docker.sock:/var/run/docker.sock:z -v /opt/dbpedia/data/de:/dbpedia-download:z --name dld-dbpedia aksw/dld-dist-dbpedia run-dld
-
-to start a VOS import setup using the previously downloaded data.
-
-
-### Download Script Options (the `download` sub-command)
-`$./download.sh [options]` or `$ docker run [...] dld-dist-dbpedia [download|prepare] [options]`
-
-    -l or --language : Set the language for which data-id file is to be downloaded [Required]
-
-    -b or --baseurl  : Set the baseurl for fetching the data-id file
-                       [Default: http://downloads.dbpedia.org/2016-04/core-i18n/{lang}/2016-04_dataid_{lang}.ttl]
-
-    -c or --core     : Must specifiy recursive level like 1,2,3... If used, the core directory will get downloaded [http://downloads.dbpedia.org/2016-04/core/]
-                       [Default recursive level: 1]
-
-    -t or --rdftype  : Set rdf format to download for datasets {nt, nq, ttl, tql},
-                       [Default: ttl]
-
-    -h or --help     : Display this help text"
-
-### Caveats and Remarks
- * the `:z` suffix for host filesystem mount points is only required
-   if SELinux access control is present and configured to `enforce` on
-   your host system and can be ommited otherwise
- * sharing to Docker control socket (`/var/run/docker.sock`) with the
-   `dld-dist-container` might require adjustment to `SELinux` policies
-   (when used) on some distributions (e.g. for Fedora and RHEL, apply
-   adjustments as in
-   [selinux-dockersock](https://github.com/dpw/selinux-dockersock))
+```
+version: '3'
+services:
+  download:
+    image: databus-download-min:latest
+    environment:
+      COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
+      TARGET_DIR: /root/data
+    volumes:
+      - ./downloads:/root/data # has to point to TARGET_DIR
+  store:
+    image: openlink/virtuoso-opensource-7
+    ports: ["8891:8890","1111:1111"]
+    environment:
+      DBA_PASSWORD: dbpedia
+    volumes:
+      - ./virtuoso-db:/opt/virtuoso-opensource/database
+      - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
+  load:
+    image: dbpedia-virtuoso-loader:latest
+    environment:
+      STORE_DATA_DIR: /usr/share/proj
+      STORE_DBA_PASSWORD: dbpedia
+      DATA_DIR: /root/data
+      DOMAIN: http://ru.dbpedia.org
+    volumes:
+      - ./downloads:/root/data # has to point to DATA_DIR
+```

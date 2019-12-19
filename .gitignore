@@ -1,6 +1,7 @@
 ### runtime-created files
 
 downloads/
+virtuoso-db/
 downloadURLs.txt
 paths.*
 *_dataid_*.ttl*
@@ -17,5 +18,3 @@ paths.*
 ## File-based project format:
 *.ipr
 *.iws
-
-
