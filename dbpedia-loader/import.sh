@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-#!/
 
 bin="isql-vt"
 host="store"
@@ -21,14 +19,9 @@ run_virtuoso_cmd () {
 }
 
 wait_for_download() {
-  retries=$1
-  for i in $(seq $retries)
-  do
+
+  while [ -f "${DATA_DIR}/download.lck" ]; do
     sleep 1
-    echo "[INFO] Waiting for files.. (${i})"
-    if [ ! -f "${DATA_DIR}/download.lck" ]; then
-      return 0
-    fi
   done
 }
 
@@ -56,9 +49,8 @@ test_connection () {
    done
 }
 
-: ${DATA_DOWNLOAD_TIMEOUT:=60}
-echo "[INFO] Waiting for download to finish (${DATA_DOWNLOAD_TIMEOUT}s)"
-wait_for_download "${DATA_DOWNLOAD_TIMEOUT}"
+echo "[INFO] Waiting for download to finish..."
+wait_for_download
 
 echo "[INFO] Waiting for store to come online (${STORE_CONNECTION_TIMEOUT}s)"
 : ${STORE_CONNECTION_TIMEOUT:=60}

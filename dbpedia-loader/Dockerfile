@@ -13,5 +13,5 @@ RUN apt-get install -y git virtuoso-opensource pigz pbzip2
 ADD import.sh /
 RUN chmod +x /import.sh
 
+ENTRYPOINT /bin/bash import.sh
 
-CMD ["/import.sh"]
