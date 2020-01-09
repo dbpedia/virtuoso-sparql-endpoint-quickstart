@@ -25,7 +25,7 @@ docker-compose uses the vanilla settings of the image the `downloads` folder is 
 
 ### Databus Download Client
 
-This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client).
+This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client). If you haven't already, download and build the download client docker image. The required environment variables are:
 * `TARGET_DIR`: The target directory for the downloaded files
 * `COLLECTION_URI`: A collection URI on the DBpedia Databus
 
@@ -38,7 +38,7 @@ docker build -t dbpedia-virtuoso-loader .
 ```
 
 You can configure the container with the following environment variables:
-* `STORE_DATA_DIR`: The directory of the VOS instance that the `downloads` folder is mounted to (`/usr/share/proj` by default)
+* `STORE_DATA_DIR`: The directory of the VOS instance that the `downloads` folder is mounted to (`/usr/share/proj` by default). Since the Loader will tell the VOS instance to start importing files it needs to know where the files are going to be. Additionally the VOS instance needs to be given access to that directory. 
 * `STORE_DBA_PASSWORD`: The admin password specified in the VOS instance (`DBA_PASSWORD` variable)
 * `DATA_DIR`: The directory of this container that the `downloads` folder is mounted to.
 * `DOMAIN`: The domain of your resource identifiers
