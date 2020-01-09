@@ -25,7 +25,7 @@ docker-compose uses the vanilla settings of the image the `downloads` folder is 
 
 ### Databus Download Client
 
-This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client).
+This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client). If you haven't already, download and build the download client docker image. The required environment variables are:
 * `TARGET_DIR`: The target directory for the downloaded files
 * `COLLECTION_URI`: A collection URI on the DBpedia Databus
 
