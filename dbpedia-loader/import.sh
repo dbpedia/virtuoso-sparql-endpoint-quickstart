@@ -1,4 +1,3 @@
-
 bin="isql-vt"
 host="store"
 port=1111
@@ -48,6 +47,9 @@ test_connection () {
        run_virtuoso_cmd 'status();'
    done
 }
+
+echo "HERE COMES THE PASSWORD!!!!!!!!===================================================================================="
+echo $STORE_DBA_PASSWORD
 
 echo "[INFO] Waiting for download to finish..."
 wait_for_download
@@ -102,3 +104,4 @@ run_virtuoso_cmd 'rdf_geo_fill();'
 echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 echo "[INFO] bulk load done; terminating loader"
+

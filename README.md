@@ -15,6 +15,8 @@ Before running the script you should configure these containers in the `docker-c
 
 You can read the full documentation of the docker image [here](https://hub.docker.com/r/openlink/virtuoso-opensource-7). The image requires one environment variable to set the admin password of the database:
 * `DBA_PASSWORD`: Your database admin password
+* `VIRT_PARAMETERS_NUMBEROFBUFFERS`: Defaults to 2000 which will result in a very long loading time. Increase this depending on the available memory on your machine. You can find more details in the docker image documentation.
+* `VIRT_PARAMETERS_MAXDIRTYBUFFERS`: Same as `VIRT_PARAMTERS_NUMBEROFBUFFERS`.
 
 This password is only set when a new database is created. The example docker-compose mounts a folder to the internal database directory for persistence. Note that this folder needs to be cleared in order to change the password via docker-compose.
 
