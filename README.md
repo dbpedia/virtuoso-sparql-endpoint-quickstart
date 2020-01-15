@@ -6,7 +6,7 @@ Creates and runs an Virtuoso Open Source instance preloaded with a Databus Colle
 All you need to do is run the `dockerized-dbpedia.sh` script in the project root directory. This will build the image of the loader/installer process that will load data to the Virtuoso Open Source instance and install the DBpedia Plugin. Once the image has been built it runs 'docker-compose up' to start three containers:
 
 * OpenLink VOS Instance ([openlink/virtuoso-opensource-7](https://hub.docker.com/r/openlink/virtuoso-opensource-7))
-* Databus Download Client
+* Minimal Databus Download Client ([dbpedia/minimal-download-client](https://hub.docker.com/repository/docker/dbpedia/minimal-download-client))
 * Loader/Installer
 
 Before running the script you should configure these containers in the `docker-compose.yml`.
