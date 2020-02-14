@@ -57,7 +57,7 @@ Since the resource identifiers are Russian dbpedia identifiers the `DOMAIN` vari
 version: '3'
 services:
   download:
-    image: databus-download-min:latest
+    image: dbpedia/minimal-download-client:latest
     environment:
       COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
       TARGET_DIR: /root/data
