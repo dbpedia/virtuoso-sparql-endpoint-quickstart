@@ -20,6 +20,7 @@ services:
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+      STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
       DATA_DIR: /root/data
       DOMAIN: http://ru.dbpedia.org
     volumes:
