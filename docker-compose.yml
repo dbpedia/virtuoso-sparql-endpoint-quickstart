@@ -9,9 +9,9 @@ services:
       - ./downloads:/root/data # has to point to TARGET_DIR
   store:
     image: openlink/virtuoso-opensource-7
-    ports: ["8891:8890","1111:1111"]
+    ports: ["${VIRTUOSO_HTTP_PORT}:8890","${VIRTUOSO_ISQL_PORT}:1111"]
     environment:
-      DBA_PASSWORD: dbpedia
+      DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
     volumes:
       - ./virtuoso-db:/opt/virtuoso-opensource/database
       - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
@@ -19,7 +19,7 @@ services:
     image: dbpedia-virtuoso-loader:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
-      STORE_DBA_PASSWORD: dbpedia
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
       DATA_DIR: /root/data
       DOMAIN: http://ru.dbpedia.org
     volumes:
