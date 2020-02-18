@@ -9,9 +9,9 @@ services:
       - ./downloads:/root/data # has to point to TARGET_DIR
   store:
     image: openlink/virtuoso-opensource-7
-    ports: ["${VIRTUOSO_HTTP_PORT}:8890","${VIRTUOSO_ISQL_PORT}:1111"]
+    ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
     environment:
-      DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
     volumes:
       - ./virtuoso-db:/opt/virtuoso-opensource/database
       - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
@@ -19,7 +19,7 @@ services:
     image: dbpedia-virtuoso-loader:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
-      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
       STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
       DATA_DIR: /root/data
       DOMAIN: http://ru.dbpedia.org
