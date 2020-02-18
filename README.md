@@ -3,13 +3,17 @@ Creates and runs an Virtuoso Open Source instance preloaded with a Databus Colle
 
 ## Usage
 
-All you need to do is run the `dockerized-dbpedia.sh` script in the project root directory. This will build the image of the loader/installer process that will load data to the Virtuoso Open Source instance and install the DBpedia Plugin. Once the image has been built it runs 'docker-compose up' to start three containers:
+All you need to do is to set a password in the `.env` change the `COLLECTION_URI` in  `docker-compose.yml` and then  run the `dockerized-dbpedia.sh` script in the project root directory. 
+
+This will build the image of the loader/installer process that will load data of the Databus Collection to the Virtuoso Open Source instance and install the DBpedia Plugin. Once the image has been built it runs 'docker-compose up' to start three containers:
 
 * OpenLink VOS Instance ([openlink/virtuoso-opensource-7](https://hub.docker.com/r/openlink/virtuoso-opensource-7))
 * Minimal Databus Download Client ([dbpedia/minimal-download-client](https://hub.docker.com/repository/docker/dbpedia/minimal-download-client))
 * Loader/Installer
 
-Before running the script you should configure these containers in the `docker-compose.yml`.
+## Configuration
+
+Before running the script you should configure the containers in the `docker-compose.yml`. Details for the parameters are listed below.
 
 ### OpenLink VOS Instance
 
@@ -49,35 +53,6 @@ You can configure the container with the following environment variables:
 
 ## Example
 
-The following `docker-compose.yml` will start a VOS instance with the DBpedia Plugin installed containing the data
+The default `docker-compose.yml` will start a VOS instance with the DBpedia Plugin installed containing the data
 specified in the https://databus.dbpedia.org/kurzum/collections/agro collection (in this case mapping-based geo-data in Russian).
 Since the resource identifiers are Russian dbpedia identifiers the `DOMAIN` variable is set to "http://ru.dbpedia.org".
-
-```
-version: '3'
-services:
-  download:
-    image: dbpedia/minimal-download-client:latest
-    environment:
-      COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
-      TARGET_DIR: /root/data
-    volumes:
-      - ./downloads:/root/data # has to point to TARGET_DIR
-  store:
-    image: openlink/virtuoso-opensource-7
-    ports: ["8891:8890","1111:1111"]
-    environment:
-      DBA_PASSWORD: dbpedia
-    volumes:
-      - ./virtuoso-db:/opt/virtuoso-opensource/database
-      - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
-  load:
-    image: dbpedia-virtuoso-loader:latest
-    environment:
-      STORE_DATA_DIR: /usr/share/proj
-      STORE_DBA_PASSWORD: dbpedia
-      DATA_DIR: /root/data
-      DOMAIN: http://ru.dbpedia.org
-    volumes:
-      - ./downloads:/root/data # has to point to DATA_DIR
-```
