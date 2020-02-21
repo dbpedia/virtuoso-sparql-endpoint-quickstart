@@ -85,4 +85,4 @@ services:
       DOMAIN: http://ru.dbpedia.org
     volumes:
       - ./downloads:/root/data # has to point to DATA_DIR
-      ```
+      
