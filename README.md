@@ -56,3 +56,33 @@ You can configure the container with the following environment variables:
 The default `docker-compose.yml` will start a VOS instance with the DBpedia Plugin installed containing the data
 specified in the https://databus.dbpedia.org/kurzum/collections/agro collection (in this case mapping-based geo-data in Russian).
 Since the resource identifiers are Russian dbpedia identifiers the `DOMAIN` variable is set to "http://ru.dbpedia.org".
+
+```
+version: '3'
+services:
+  download:
+    image: dbpedia/minimal-download-client:latest
+    environment:
+      COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
+      TARGET_DIR: /root/data
+    volumes:
+      - ./downloads:/root/data # has to point to TARGET_DIR
+  store:
+    image: openlink/virtuoso-opensource-7
+    ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
+    environment:
+            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
+    volumes:
+      - ./virtuoso-db:/opt/virtuoso-opensource/database
+      - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
+  load:
+    image: dbpedia-virtuoso-loader:latest
+    environment:
+      STORE_DATA_DIR: /usr/share/proj
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
+      STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
+      DATA_DIR: /root/data
+      DOMAIN: http://ru.dbpedia.org
+    volumes:
+      - ./downloads:/root/data # has to point to DATA_DIR
+      ```
