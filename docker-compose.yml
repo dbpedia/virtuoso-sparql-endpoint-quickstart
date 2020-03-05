@@ -3,7 +3,7 @@ services:
   download:
     image: dbpedia/minimal-download-client:latest
     environment:
-      COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
+      COLLECTION_URI: https://databus.dbpedia.org/jfrey/collections/en-dbpedia-demo/
       TARGET_DIR: /root/data
     volumes:
       - ./downloads:/root/data # has to point to TARGET_DIR
