@@ -1,5 +1,5 @@
 # Dockerized-DBpedia
-Creates and runs an Virtuoso Open Source instance preloaded with a Databus Collection and the VOS DBpedia Plugin installed.
+Creates and runs a Virtuoso Open Source instance preloaded with a Databus Collection and the VOS DBpedia Plugin installed.
 
 ## Usage
 
