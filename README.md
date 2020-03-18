@@ -3,7 +3,7 @@ Creates and runs a Virtuoso Open Source instance preloaded with a Databus Collec
 
 ## Usage
 
-All you need to do is to set a password in the `.env` change the `COLLECTION_URI` in  `docker-compose.yml` and then  run the `dockerized-dbpedia.sh` script in the project root directory. 
+All you need to do is to set a password in the `.env` file change the `COLLECTION_URI` in  `docker-compose.yml` and then  run the `dockerized-dbpedia.sh` script in the project root directory. 
 
 This will build the image of the loader/installer process that will load data of the Databus Collection to the Virtuoso Open Source instance and install the DBpedia Plugin. Once the image has been built it runs 'docker-compose up' to start three containers:
 
