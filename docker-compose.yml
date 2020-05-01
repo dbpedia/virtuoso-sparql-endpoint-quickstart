@@ -22,6 +22,6 @@ services:
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
       STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
       DATA_DIR: /root/data
-      DOMAIN: http://ru.dbpedia.org
+      DOMAIN: http://dbpedia.org
     volumes:
       - ./downloads:/root/data # has to point to DATA_DIR
