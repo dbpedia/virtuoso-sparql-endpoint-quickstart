@@ -5,6 +5,7 @@ services:
     environment:
       COLLECTION_URI: https://databus.dbpedia.org/jfrey/collections/en-dbpedia-demo/
       TARGET_DIR: /root/data
+      GRAPH_MODE: download-url #this changes behaviour for default graph per file, graph will have no effect on rdf statements with context; disable by using empty string
     volumes:
       - ./downloads:/root/data # has to point to TARGET_DIR
   store:
@@ -20,8 +21,8 @@ services:
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
-      STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
+      STORE_ISQL_PORT: 1111 #docker takes care of routing in compose so this is independent of the actual exposed port of store container, don't touch unless you change virtuoso.ini settings
       DATA_DIR: /root/data
-      DOMAIN: http://dbpedia.org
+      DOMAIN: http://dbpedia.org 
     volumes:
       - ./downloads:/root/data # has to point to DATA_DIR
