@@ -5,7 +5,7 @@ services:
     environment:
       COLLECTION_URI: https://databus.dbpedia.org/jfrey/collections/en-dbpedia-demo/
       TARGET_DIR: /root/data
-      GRAPH_MODE: download-url #this changes behaviour for default graph per file, graph will have no effect on rdf statements with context; disable by using empty string
+      GRAPH_MODE: "download-url" #download-url #this changes behaviour for default graph setting per file, graph will have no effect on rdf statements with context; to disable change to "no"
     volumes:
       - ./downloads:/root/data # has to point to TARGET_DIR
   store:
