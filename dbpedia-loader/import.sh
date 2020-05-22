@@ -19,7 +19,7 @@ run_virtuoso_cmd () {
 }
 
 wait_for_download() {
-
+  sleep 10
   while [ -f "${DATA_DIR}/download.lck" ]; do
     sleep 1
   done
