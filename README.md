@@ -63,8 +63,9 @@ services:
   download:
     image: dbpedia/minimal-download-client:latest
     environment:
-      COLLECTION_URI: https://databus.dbpedia.org/kurzum/collections/agro
+      COLLECTION_URI: https://databus.dbpedia.org/dbpedia/collections/latest-core/
       TARGET_DIR: /root/data
+      GRAPH_MODE: "download-url" #download-url #this changes behaviour for default graph setting per file, graph will have no effect on rdf statements with context; to disable change to "no"
     volumes:
       - ./downloads:/root/data # has to point to TARGET_DIR
   store:
@@ -76,13 +77,14 @@ services:
       - ./virtuoso-db:/opt/virtuoso-opensource/database
       - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
   load:
-    image: dbpedia-virtuoso-loader:latest
+    image: dbpedia/dbpedia-virtuoso-loader:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
-      STORE_ISQL_PORT: ${VIRTUOSO_ISQL_PORT}
+      STORE_ISQL_PORT: 1111 #docker takes care of routing in compose so this is independent of the actual exposed port of store container, don't touch unless you change virtuoso.ini settings
       DATA_DIR: /root/data
-      DOMAIN: http://ru.dbpedia.org
+      DOMAIN: http://dbpedia.org 
     volumes:
       - ./downloads:/root/data # has to point to DATA_DIR
+
       
