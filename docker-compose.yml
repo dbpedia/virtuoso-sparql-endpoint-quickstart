@@ -3,7 +3,7 @@ services:
   download:
     image: dbpedia/minimal-download-client:latest
     environment:
-      COLLECTION_URI: https://databus.dbpedia.org/jfrey/collections/en-dbpedia-demo/
+      COLLECTION_URI: https://databus.dbpedia.org/dbpedia/collections/latest-core/
       TARGET_DIR: /root/data
       GRAPH_MODE: "download-url" #download-url #this changes behaviour for default graph setting per file, graph will have no effect on rdf statements with context; to disable change to "no"
     volumes:
@@ -17,7 +17,7 @@ services:
       - ./virtuoso-db:/opt/virtuoso-opensource/database
       - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
   load:
-    image: dbpedia-virtuoso-loader:latest
+    image: dbpedia/dbpedia-virtuoso-loader:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
