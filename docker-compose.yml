@@ -3,26 +3,26 @@ services:
   download:
     image: dbpedia/minimal-download-client:latest
     environment:
-      COLLECTION_URI: https://databus.dbpedia.org/dbpedia/collections/latest-core/
+      COLLECTION_URI: ${COLLECTION_URI}
       TARGET_DIR: /root/data
-      GRAPH_MODE: "download-url" #download-url #this changes behaviour for default graph setting per file, graph will have no effect on rdf statements with context; to disable change to "no"
+      GRAPH_MODE: "download-url"
     volumes:
-      - ./downloads:/root/data # has to point to TARGET_DIR
+      - ${DATA_DIR}:/root/data
   store:
     image: openlink/virtuoso-opensource-7
     ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
     environment:
-            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
+            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
     volumes:
-      - ./virtuoso-db:/opt/virtuoso-opensource/database
-      - ./downloads:/usr/share/proj # has to point to STORE_DATA_DIR in 'load'
+      - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
+      - ${DATA_DIR}:/usr/share/proj
   load:
     image: dbpedia/dbpedia-virtuoso-loader:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
-      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g.  VIRTUOSO_ADMIN_PASSWD= docker-compose up}
-      STORE_ISQL_PORT: 1111 #docker takes care of routing in compose so this is independent of the actual exposed port of store container, don't touch unless you change virtuoso.ini settings
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+      STORE_ISQL_PORT: 1111
       DATA_DIR: /root/data
-      DOMAIN: http://dbpedia.org 
+      DOMAIN: ${DOMAIN}
     volumes:
-      - ./downloads:/root/data # has to point to DATA_DIR
+      - ${DATA_DIR}:/root/data
