@@ -1,7 +1,7 @@
 version: '3'
 services:
   download:
-    image: dbpedia/minimal-download-client:latest
+    image: dbpedia/dbpedia-databus-collection-downloader:latest
     environment:
       COLLECTION_URI: ${COLLECTION_URI}
       TARGET_DIR: /root/data
