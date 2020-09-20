@@ -17,7 +17,7 @@ services:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
   load:
-    image: dbpedia/dbpedia-virtuoso-loader:latest
+    image: dbpedia/virtuoso-sparql-endpoint-quickstart:latest
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
