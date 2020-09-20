@@ -26,7 +26,7 @@ Note that this collection is only a collection of RDF data to test drive the doc
 The Virtuoso SPARQL Endpoint Quickstart is a network of three different docker containers which are launched with docker-compose. The following containers are being run:
 
 * OpenLink VOS Instance ([openlink/virtuoso-opensource-7](https://hub.docker.com/r/openlink/virtuoso-opensource-7))
-* Minimal Databus Download Client ([dbpedia/minimal-download-client](https://hub.docker.com/repository/docker/dbpedia/minimal-download-client))
+* DBpedia Databus Collection Downloader ([dbpedia/dbpedia-databus-collection-downloader](https://hub.docker.com/repository/docker/dbpedia/dbpedia-databus-collection-downloader))
 * Loader/Installer
 
 Once the loading process has been completed, only the OpenLink VOS Instance will keep running. The other two containers will shut down once their job is done. By running `docker ps` you can see whether the download and loader container are still running. If there is only the OpenLink VOS Instance remaining, all your data has been loaded to the triple store.
@@ -73,9 +73,9 @@ The second volume specified in the docker-compose file connects the downloads fo
 accessible by the virtuoso load script. Accessible paths are set in the internal `virtuoso.ini` file (`DirsAllowed`). As the
 docker-compose uses the vanilla settings of the image the local `./downloads` folder is mounted to `/usr/share/proj` inside of the container which is in the `DirsAllowed` per default.
 
-#### Container 2: Minimal Databus Download Client
+#### Container 2: DBpedia Databus Collection Downloader
 
-This project uses the minimal DBpedia Databus download client. You can find the documentation [here](https://github.com/dbpedia/minimal-download-client). If you haven't already, download and build the download client docker image. The required environment variables are:
+This project uses the DBpedia Databus Collection Downloader. You can find the documentation [here](https://github.com/dbpedia/dbpedia-databus-collection-downloader). If you haven't already, download and build the download client docker image. The required environment variables are:
 
 * `TARGET_DIR`: The target directory for the downloaded files (inside of the container). Make sure that the directory is mounted to a local folder to access the files in the docker network.
 
