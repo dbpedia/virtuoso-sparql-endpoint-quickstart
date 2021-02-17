@@ -66,6 +66,12 @@ run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
 run_virtuoso_cmd "registry_set ('dbp_domain', '${DOMAIN}');"
+echo "[INFO] Setting 'dbp_graph' registry entry to ${DOMAIN}"
+run_virtuoso_cmd "registry_set ('dbp_graph', '${DOMAIN}');"
+echo "[INFO] Setting 'dbp_lang' registry entry to ${DBP_LANG}"
+run_virtuoso_cmd "registry_set ('dbp_lang', '${DBP_LANG}');"
+echo "[INFO] Setting 'dbp_category' registry entry to ${DBP_CATEGORY}"
+run_virtuoso_cmd "registry_set ('dbp_category', '${DBP_CATEGORY}');"
 
 echo "[INFO] Installing VAD package 'dbpedia_dav.vad'"
 run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0);"
@@ -74,7 +80,8 @@ run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0)
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz bz2; do
- run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', 'http://dbpedia.org');"
+ echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
+ run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', 'http://ja.dbpedia.org');" # changed graph name
 done
 
 echo "[INFO] deactivating auto-indexing"
