@@ -27,7 +27,7 @@ The Virtuoso SPARQL Endpoint Quickstart is a network of three different docker c
 
 * OpenLink VOS Instance ([openlink/virtuoso-opensource-7](https://hub.docker.com/r/openlink/virtuoso-opensource-7))
 * DBpedia Databus Collection Downloader ([dbpedia/dbpedia-databus-collection-downloader](https://hub.docker.com/repository/docker/dbpedia/dbpedia-databus-collection-downloader))
-* Loader/Installer
+* Loader/Installer ([dbpedia/virtuoso-sparql-endpoint-quickstart](https://hub.docker.com/repository/docker/dbpedia/virtuoso-sparql-endpoint-quickstart))
 
 Once the loading process has been completed, only the OpenLink VOS Instance will keep running. The other two containers will shut down once their job is done. By running `docker ps` you can see whether the download and loader container are still running. If there is only the OpenLink VOS Instance remaining, all your data has been loaded to the triple store.
 
@@ -37,27 +37,32 @@ The possible configurations for all containers are documented below. The reposit
 
 Running `docker-compose up` will use the environment variables specified in the `.env` file next to the `docker-compose.yml`. The available variables are:
 
-* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use the *Latest Core Collection* 
-  (https://databus.dbpedia.org/dbpedia/collections/latest-core). You can start the SPARQL endpoint with any other Databus Collection or you can copy the files manually into the `./downloads` folder.
 
 * `VIRTUOSO_ADMIN_PASSWD`: The password for the Virtuoso Database. **This needs to be set in order to successfully start the SPARQL endpoint.**
 
 * `VIRTUOSO_HTTP_PORT`: The HTTP port of the OpenLink VOS instance.
 
-* `VIRTUOSO_ISQRL_PORT`: The ISQL port of the OpenLink VOS instance.
-
-* `DATA_DIR`: The directory containing the loaded data. The download container will download files to this directory. You can also copy files into the directory manually.
+* `VIRTUOSO_ISQL_PORT`: The ISQL port of the OpenLink VOS instance.
 
 * `VIRTUOSO_DIR`: The directory that stores the content of the virtuoso triple store.
+
+* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use the *Latest Core Collection* 
+  (https://databus.dbpedia.org/dbpedia/collections/latest-core). You can start the SPARQL endpoint with any other Databus Collection or you can copy the files manually into the `./downloads` folder.
+
+* `DATA_DIR`: The directory containing the loaded data. The download container will download files to this directory. You can also copy files into the directory manually.
 
 * `DOMAIN`: The domain of your resource identifiers. This variable is only required if you intend to access the HTML view of your resources (e.g. if you want to run a DBpedia Chapter). The HTML view will only show correct views for identifiers in the specified domain. 
   (e.g. set this to http://ru.dbpedia.org when running the Russian chapter with Russian resource identifiers)
 
-  
+* `DBP_LANG` : The language code of your language. Defaults to 'en'.
+
+* `DBP_CATEGORY` : The word 'category' in your language. Defaults to 'Category'.
 
 ### Container Configurations
 
 You can configure the containers in the network even further by adjusting the `docker-compose.yml` file. The following section lists all the environment variables that can only be set in the `docker-compose.yml` for each of the containers.
+
+Only change the docker-compose.yml if you know what you are doing. For most users the .env file is sufficient.
 
 #### Container 1: OpenLink VOS Instance
 
@@ -81,7 +86,9 @@ This project uses the DBpedia Databus Collection Downloader. You can find the do
 
 #### Container 3: Loader/Installer
 
-You can build the loader/installer docker image by running
+The loader/installer container is being pulled from ([dbpedia/virtuoso-sparql-endpoint-quickstart](https://hub.docker.com/repository/docker/dbpedia/virtuoso-sparql-endpoint-quickstart)).
+
+Alternatively, you could potentially modify and then build the loader/installer docker image by running
 
 ```
 cd ./dbpedia-loader
@@ -99,6 +106,8 @@ You can configure the container with the following environment variables:
 
 
 ## Instructions for DBpedia Chapters
+
+In case of emergency or confusion please visit [this forum thread](https://forum.dbpedia.org/t/chapter-deployment-support-thread/950). Feel free to ask and answer questions as it will help future chapter deployments!
 
 In order to use the Virtuoso SPARQL Endpoint Quickstart docker network to host your own DBpedia instance you need to create a chapter collection on the [DBpedia Databus](https://databus.dbpedia.org/). You can learn about the Databus and Databus Collections in the [DBpedia Stack Tutorial on Youtube](https://www.youtube.com/watch?v=NrUK0Hs-ZpQ)
 
