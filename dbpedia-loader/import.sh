@@ -81,7 +81,7 @@ run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0)
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz bz2; do
  echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
- run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', 'http://ja.dbpedia.org');" # changed graph name
+ run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
 done
 
 echo "[INFO] deactivating auto-indexing"
