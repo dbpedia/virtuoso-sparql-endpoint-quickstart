@@ -2,15 +2,16 @@ version: '3'
 services:
   download:
     image: dbpedia/dbpedia-databus-collection-downloader:latest
+    env_file: config.env   
     environment:
       COLLECTION_URI: ${COLLECTION_URI}
       TARGET_DIR: /root/data
-      GRAPH_MODE: "download-url"
     volumes:
       - ${DATA_DIR}:/root/data
   store:
     image: openlink/virtuoso-opensource-7
     ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
+    env_file: config.env
     environment:
             DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
     volumes:
@@ -18,6 +19,7 @@ services:
       - ${DATA_DIR}:/usr/share/proj
   load:
     image: dbpedia/virtuoso-sparql-endpoint-quickstart:latest
+    env_file: config.env
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
