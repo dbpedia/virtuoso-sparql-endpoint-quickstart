@@ -9,7 +9,7 @@ Running the Virtuoso SPARQL Endpoint Quickstart requires Docker and Docker Compo
 ``` bash
 git clone https://github.com/dbpedia/virtuoso-sparql-endpoint-quickstart.git
 cd virtuoso-sparql-endpoint-quickstart
-COLLECTION_URI=https://databus.dbpedia.org/dbpedia/collections/latest-core VIRTUOSO_ADMIN_PASSWD=password docker-compose up
+COLLECTION_URI=https://databus.dbpedia.org/dbpedia/collections/latest-core VIRTUOSO_ADMIN_PASSWD=YourSecretPassword docker-compose up
 ```
 
 After a short delay your SPARQL endpoint will be running at [localhost:8890/sparql](localhost:8890/sparql). 
