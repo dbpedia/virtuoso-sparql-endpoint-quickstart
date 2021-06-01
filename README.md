@@ -21,6 +21,14 @@ In order to verify your setup more quickly you can use the following collection 
 
 Note that this collection is only a collection of RDF data to test drive the docker compose network and not a DBpedia release. After a short delay the resource [http://localhost:8890/page/Berlin](http://localhost:8890/page/Berlin) should be accessible. 
 
+## Troubleshooting
+
+- `virtuoso-sparql-endpoint-quickstart_load_1 exited with code 1` something went wrong with loading the files, data may be incompletely loaded 
+  - * `load_1      | *** Error 28000: [Virtuoso Driver]CL034: Bad login` you are not using the correct password (the one provided when starting the compose setup for the first time
+- `store_1     | 05:28:37 *** read-ahead of a free or out of range page dp L=318307, database not necessarily corrupted.` increase the memory settings (BUFFERS options) for the virtuoso database in config.env see [here](http://vos.openlinksw.com/owiki/wiki/VOS/VirtRDFPerformanceTuning#General%20Memory%20Usage%20Settings] for more details
+- `store_1     | 05:18:32 Write wait on column page 62980.  Waits should be on the index leaf page, except when col page is held for read by background write` see above
+- `store_1     | 05:27:43 * Monitor: High disk read (1)` see above
+
 ## Documentation
 
 The Virtuoso SPARQL Endpoint Quickstart is a network of three different docker containers which are launched with docker-compose. The following containers are being run:
