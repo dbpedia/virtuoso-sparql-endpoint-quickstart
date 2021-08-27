@@ -6,6 +6,7 @@ services:
     environment:
       COLLECTION_URI: ${COLLECTION_URI}
       TARGET_DIR: /root/data
+      SPARQL_ENDPOINT: ${SPARQL_ENDPOINT}
     volumes:
       - ${DATA_DIR}:/root/data
   store:
