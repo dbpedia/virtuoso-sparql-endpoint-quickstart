@@ -129,7 +129,15 @@ Once all variables are set in the `.env` file run
 docker-compose up
 ````
 
+## Enabling Federated Queries
 
+Federated queries can be enabled by granting the roles `SPARQL_LOAD_SERVICE_DATA` and `SPARQL_SPONGE` to the `SPARQL` user.
+```
+docker exec -it [virtuoso_docker_name] /bin/bash
+isql-v -U dba -P [virtuoso_admin_password]
+grant SPARQL_LOAD_SERVICE_DATA to "SPARQL";
+grant SPARQL_SPONGE to "SPARQL";
+```
 
 
 
