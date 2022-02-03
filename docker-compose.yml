@@ -2,28 +2,31 @@ version: '3'
 services:
   download:
     image: dbpedia/dbpedia-databus-collection-downloader:latest
-    env_file: config.env   
+    env_file: .env   
     environment:
       COLLECTION_URI: ${COLLECTION_URI}
-      TARGET_DIR: /root/data
+      TARGET_DIR: /root/data    
       SPARQL_ENDPOINT: ${SPARQL_ENDPOINT}
     volumes:
       - ${DATA_DIR}:/root/data
   store:
     image: openlink/virtuoso-opensource-7
     ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
-    env_file: config.env
+    env_file: .env
     environment:
-            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g. VIRTUOSO_ADMIN_PASSWD=YourSecretPass docker-compose up}
+            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
     volumes:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
   load:
-    image: dbpedia/virtuoso-sparql-endpoint-quickstart:latest
-    env_file: config.env
+    image: custom_load_perso:latest
+    build :
+       context: ./dbpedia-loader
+       dockerfile: Dockerfile
+    env_file: .env
     environment:
       STORE_DATA_DIR: /usr/share/proj
-      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD:?Set VIRTUOSO_ADMIN_PASSWD in .env file or pass as environment variable e.g. VIRTUOSO_ADMIN_PASSWD=YourSecretPass docker-compose up}
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
       STORE_ISQL_PORT: 1111
       DATA_DIR: /root/data
       DOMAIN: ${DOMAIN}

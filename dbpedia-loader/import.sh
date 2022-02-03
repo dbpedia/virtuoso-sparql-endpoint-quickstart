@@ -48,7 +48,6 @@ test_connection () {
        run_virtuoso_cmd 'status();'
    done
 }
-
 echo "[INFO] Waiting for download to finish..."
 wait_for_download
 
@@ -76,13 +75,61 @@ run_virtuoso_cmd "registry_set ('dbp_category', '${DBP_CATEGORY}');"
 echo "[INFO] Installing VAD package 'dbpedia_dav.vad'"
 run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0);"
 
+
+
+echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
+# > we get the data_artefact name and we load it into a named graph based on 
+# REGEXPR 
+echo "============================"
+echo "${GRAPH_MODE}"
+echo "============================"
+pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
+pat2='([^_]*)' # GET THE FIRST PART OF THE ARTIFACT NAME BEFORE th "_" ! COULD CHANGE DEPENDING OF NAMING CONVENTIONS !
+
+# NOTE : How to manage the trig and the nq files that are supposed to integrate named graph ?
+
+echo "[CUSTOM PART IMPORT] BASED ON THESE regexpr : ${pat1} and ${pat2}"
+
+for entry in "${DATA_DIR}"/*
+do
+  echo "$entry"
+  if [[ $entry =~ $pat1 ]]
+  then
+	  fn=${entry##*/} # GET FILE NAME ONLY
+	  echo "$fn"
+	  case "$entry" in
+		  *yago*)
+			  run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/yago');"
+			  echo "FOUND YAGO DATA";;
+		  *sameas-all-wikis*)
+			  run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/wikidata');"
+			  echo "FOUND WIKID1TA DATA";;
+                  *replaced-iris*)
+                          run_virtuoso_cmd run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/replaced-iris');"
+                          echo "FOUND REPLACED IRIS DATA";;
+		  *)
+		  	if [[ $fn =~ $pat2 ]]
+          	  	then
+                  		matched="${BASH_REMATCH[1]}"
+                  		echo "FOUNd AND LOAD ---------------- : ${DOMAIN}/${matched}"
+                		run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${matched}');"
+          		fi;;
+	esac
+  fi
+done
+
+
+######################################################### OLD PROCESS
+# > load every data inside the default graph 
+
 #ensure that all supported formats get into the load list
 #(since we have to excluse graph-files *.* won't do the trick
-echo "[INFO] registring RDF documents for import"
-for ext in nt nq owl rdf trig ttl xml gz bz2; do
- echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
- run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
-done
+### COMMENTED
+#echo "[INFO] registring RDF documents for import"
+#for ext in nt nq owl rdf trig ttl xml gz bz2; do
+# echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
+ #run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
+#done
 
 echo "[INFO] deactivating auto-indexing"
 run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
@@ -110,4 +157,8 @@ run_virtuoso_cmd 'rdf_geo_fill();'
 echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 echo "[INFO] bulk load done; terminating loader"
+
+echo "[INFO : update of lookup tables"
+run_virtuoso_cmd 'urilbl_ac_init_db()'
+run_virtuoso_cmd 's_rank()'
 
