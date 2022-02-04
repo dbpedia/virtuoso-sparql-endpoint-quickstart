@@ -5,7 +5,7 @@ virtuoso-db/
 downloadURLs.txt
 paths.*
 *_dataid_*.ttl*
-.env.complete
+.env.complete_dbpedia
 virtuoso/
 data/
 *.swl
