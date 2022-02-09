@@ -7,6 +7,7 @@ services:
     env_file: .env_dbpedia
     environment:
             DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+    restart: always
     volumes:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
