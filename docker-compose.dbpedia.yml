@@ -1,14 +1,6 @@
 version: '3'
 services:
-  download:
-    image: dbpedia/dbpedia-databus-collection-downloader:latest
-    env_file: .env_dbpedia  
-    environment:
-      COLLECTION_URI: ${COLLECTION_URI}
-      TARGET_DIR: /root/data    
-      SPARQL_ENDPOINT: ${SPARQL_ENDPOINT}
-    volumes:
-      - ${DATA_DIR}:/root/data
+ 
   store:
     image: openlink/virtuoso-opensource-7
     ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
