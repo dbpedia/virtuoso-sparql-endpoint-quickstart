@@ -12,7 +12,7 @@ services:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
   load:
-    image: custom_load_perso:latest
+    #image: custom_load_perso:latest
     build :
        context: ./dbpedia-loader
        dockerfile: Dockerfile
