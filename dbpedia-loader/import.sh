@@ -90,13 +90,14 @@ pat2='([a-z\-]+)_'
 
 for entry in "${DATA_DIR}"/*
 do
-  fn=${entry##*/} 
-  echo "$entry"
+
   level1="";
   level2="";
   level3="";
   if [[ $entry =~ $pat1 ]]
   then
+                fn=${entry##*/} # GET FILE NAME ONLY
+	               echo "$fn"
                 if [[ $entry =~ $pat2 ]]; then
                         level1="${BASH_REMATCH[1]}";
                         entry1=$(echo $entry | sed "s+${BASH_REMATCH[0]}++g");
