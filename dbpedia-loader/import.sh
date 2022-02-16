@@ -87,7 +87,7 @@ echo "============================"
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
 
-for entry in /appli/databus-data/lastUpdate/*
+for entry in "${DATA_DIR}"/*
 do
   echo "$entry"
   level1="";
