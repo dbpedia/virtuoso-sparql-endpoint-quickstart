@@ -90,6 +90,7 @@ pat2='([a-z\-]+)_'
 
 for entry in "${DATA_DIR}"/*
 do
+  fn=${entry##*/} 
   echo "$entry"
   level1="";
   level2="";
