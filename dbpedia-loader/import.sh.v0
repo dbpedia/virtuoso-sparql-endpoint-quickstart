@@ -83,55 +83,39 @@ echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
 echo "============================"
 echo "${GRAPH_MODE}"
 echo "============================"
-
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
-pat2='([a-z\-]+)_'
+pat2='([^_]*)' # GET THE FIRST PART OF THE ARTIFACT NAME BEFORE th "_" ! COULD CHANGE DEPENDING OF NAMING CONVENTIONS !
 
-for entry in /appli/databus-data/lastUpdate/*
+# NOTE : How to manage the trig and the nq files that are supposed to integrate named graph ?
+
+echo "[CUSTOM PART IMPORT] BASED ON THESE regexpr : ${pat1} and ${pat2}"
+
+for entry in "${DATA_DIR}"/*
 do
   echo "$entry"
-  level1="";
-  level2="";
-  level3="";
   if [[ $entry =~ $pat1 ]]
   then
-                if [[ $entry =~ $pat2 ]]; then
-                        level1="${BASH_REMATCH[1]}";
-                        entry1=$(echo $entry | sed "s+${BASH_REMATCH[0]}++g");
-                        if [[ $entry1 =~ $pat2 ]]; then
-                         level2="${BASH_REMATCH[1]}";
-                         entry2=$(echo $entry1 | sed "s+${BASH_REMATCH[0]}++g");
-
-                                if [[ $entry2  =~ $pat2 ]]; then
-                                level3="${BASH_REMATCH[1]}";
-                                fi;
-                        fi;
-                fi;
+	  fn=${entry##*/} # GET FILE NAME ONLY
+	  echo "$fn"
+	  case "$entry" in
+		  *yago*)
+			  run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/yago');"
+			  echo "FOUND YAGO DATA";;
+		  *sameas-all-wikis*)
+			  run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/wikidata');"
+			  echo "FOUND WIKID1TA DATA";;
+                  *replaced-iris*)
+                          run_virtuoso_cmd run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/replaced-iris');"
+                          echo "FOUND REPLACED IRIS DATA";;
+		  *)
+		  	if [[ $fn =~ $pat2 ]]
+          	  	then
+                  		matched="${BASH_REMATCH[1]}"
+                  		echo "FOUNd AND LOAD ---------------- : ${DOMAIN}/${matched}"
+                		run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${matched}');"
+          		fi;;
+	esac
   fi
-  if [[ $level1 != "" ]] && [[ $level2 != "" ]] && [[ $level3 != "" ]]; then
-     if [[ $level1 == "vehnem" ]] && [[ $level2 == "replaced-iris" ]]; then
-        level1="dbpedia";
-     fi
-     if [[ $level1 == "vehnem" ]] && [[ $level2 == "yago" ]]; then
-        level1="outlinks";
-     fi
-     if [[ $level1 == "ontologies" ]]; then
-        level1="dbpedia";
-        level2="ontology";
-        level3="";
-     fi
-
-     if [[ "$level1" != "" ]]; then
-             final_name="${level1}";
-     fi
-     if [[ "$level2" != "" ]]; then
-             final_name="${level1}_${level2}";
-     fi
-     if [[ "$level3" != "" ]]; then
-             final_name="${level1}_${level2}_${level3}";
-     fi
-     run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
-  fi;
 done
 
 
