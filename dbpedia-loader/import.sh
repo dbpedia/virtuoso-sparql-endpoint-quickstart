@@ -81,7 +81,8 @@ echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
 # > we get the data_artefact name and we load it into a named graph based on 
 # REGEXPR 
 echo "============================"
-echo "${GRAPH_MODE}"
+echo "graph mode : ${GRAPH_MODE}"
+echo "data dir : ${DATA_DIR}"
 echo "============================"
 
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
