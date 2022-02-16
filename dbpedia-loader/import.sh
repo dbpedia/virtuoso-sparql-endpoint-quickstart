@@ -90,28 +90,29 @@ pat2='([a-z\-]+)_'
 
 for entry in "${DATA_DIR}"/*
 do
-
+  echo "$entry";
   level1="";
   level2="";
   level3="";
   if [[ $entry =~ $pat1 ]]
   then
-                fn=${entry##*/} # GET FILE NAME ONLY
-	               echo "$fn"
-                if [[ $entry =~ $pat2 ]]; then
-                        level1="${BASH_REMATCH[1]}";
-                        entry1=$(echo $entry | sed "s+${BASH_REMATCH[0]}++g");
-                        if [[ $entry1 =~ $pat2 ]]; then
-                         level2="${BASH_REMATCH[1]}";
-                         entry2=$(echo $entry1 | sed "s+${BASH_REMATCH[0]}++g");
+	fn=${entry##*/} # GET FILE NAME ONLY
+	echo "$fn"
+	if [[ $entry =~ $pat2 ]]; then
+		level1="${BASH_REMATCH[1]}";
+		entry1=$(echo $entry | sed "s+${BASH_REMATCH[0]}++g");
+		if [[ $entry1 =~ $pat2 ]]; then
+		 level2="${BASH_REMATCH[1]}";
+		 entry2=$(echo $entry1 | sed "s+${BASH_REMATCH[0]}++g");
 
-                                if [[ $entry2  =~ $pat2 ]]; then
-                                level3="${BASH_REMATCH[1]}";
-                                fi;
-                        fi;
-                fi;
+			if [[ $entry2  =~ $pat2 ]]; then
+			level3="${BASH_REMATCH[1]}";
+			fi;
+		fi;
+	fi;
   fi
   if [[ $level1 != "" ]] && [[ $level2 != "" ]] && [[ $level3 != "" ]]; then
+     echo "found pattern so construct graph name";
      if [[ $level1 == "vehnem" ]] && [[ $level2 == "replaced-iris" ]]; then
         level1="dbpedia";
      fi
@@ -133,6 +134,7 @@ do
      if [[ "$level3" != "" ]]; then
              final_name="${level1}_${level2}_${level3}";
      fi
+     echo "> final name is : ${final_name}"
      run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
   fi;
 done
