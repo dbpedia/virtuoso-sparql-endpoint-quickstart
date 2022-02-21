@@ -13,4 +13,4 @@ COPY wait-for-it.sh wait-for-it.sh
 RUN chmod +x wait-for-it.sh
 
 ENTRYPOINT [ "/bin/bash", "-c" ]
-CMD ["./wait-for-it.sh" , "[ENTER YOUR ENDPOINT HERE]" , "--strict" , "--timeout=300" , "--" , "./import.sh"]
+CMD ["./wait-for-it.sh" , "store:1111" , "--strict" , "--timeout=300" , "--" , "./import.sh"]
