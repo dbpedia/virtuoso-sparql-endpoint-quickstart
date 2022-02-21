@@ -17,7 +17,7 @@ services:
        context: ./dbpedia-loader
        dockerfile: Dockerfile
     env_file: .env_dbpedia
-    restart: on-failure[:3]
+    restart: on-failure:3
     environment:
       STORE_DATA_DIR: /usr/share/proj
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
