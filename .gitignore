@@ -7,6 +7,8 @@ paths.*
 *_dataid_*.ttl*
 .env_dbpedia.complete
 .env_live.complete
+.env_live_complete
+.env_dbpedia_complete
 virtuoso/
 data/
 *.swl
