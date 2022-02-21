@@ -7,10 +7,7 @@ ENV DEBIAN_FRONTEND noninteractive
 RUN apt-get update
 RUN apt-get install -y git virtuoso-opensource pigz pbzip2
 
-ADD import.sh /
-RUN chmod +x /import.sh
-COPY wait-for-it.sh wait-for-it.sh 
-RUN chmod +x wait-for-it.sh
+ADD import_live.sh /
+RUN chmod +x /import_live.sh
 
-ENTRYPOINT [ "/bin/bash", "-c" ]
-CMD ["./wait-for-it.sh" , "store:1111" , "--strict" , "--timeout=300" , "--" , "./import_live.sh"]
+ENTRYPOINT /bin/bash import_live.sh

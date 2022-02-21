@@ -9,8 +9,4 @@ RUN apt-get install -y git virtuoso-opensource pigz pbzip2
 
 ADD import.sh /
 RUN chmod +x /import.sh
-COPY wait-for-it.sh wait-for-it.sh 
-RUN chmod +x wait-for-it.sh
 
-ENTRYPOINT [ "/bin/bash", "-c" ]
-CMD ["./wait-for-it.sh" , "store:1111" , "--strict" , "--timeout=300" , "--" , "./import.sh"]

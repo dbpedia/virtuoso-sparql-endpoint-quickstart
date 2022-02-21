@@ -27,6 +27,5 @@ services:
       DBP_CATEGORY: ${DBP_CATEGORY}
     volumes:
       - ${DATA_DIR}:/root/data
-    depends_on:
+    links:
       - store
-    command: ["./wait-for-it.sh", "store:1111", "--", "echo '================> VIRTUOSO STORE LOADED'"]
