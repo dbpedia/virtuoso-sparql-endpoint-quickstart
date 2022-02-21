@@ -27,3 +27,5 @@ services:
       DBP_CATEGORY: ${DBP_CATEGORY}
     volumes:
       - ${DATA_DIR}:/root/data
+    depends_on:
+      - store
