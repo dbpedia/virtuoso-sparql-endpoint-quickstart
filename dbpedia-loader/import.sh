@@ -74,6 +74,8 @@ run_virtuoso_cmd "registry_set ('dbp_category', '${DBP_CATEGORY}');"
 
 echo "[INFO] Installing VAD package 'dbpedia_dav.vad'"
 run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0);"
+echo "[INFO] Installing VAD package 'fct_dav.vad'"
+run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/fct_dav.vad', 0);"
 
 
 
