@@ -181,7 +181,7 @@ echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 echo "[INFO] bulk load done; terminating loader"
 
-echo "[INFO : update of lookup tables"
-run_virtuoso_cmd 'urilbl_ac_init_db()'
-run_virtuoso_cmd 's_rank()'
+echo "[INFO] update of lookup tables"
+run_virtuoso_cmd 'urilbl_ac_init_db();'
+run_virtuoso_cmd 's_rank();'
 
