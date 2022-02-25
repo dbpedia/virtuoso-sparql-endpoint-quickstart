@@ -87,8 +87,13 @@ echo "graph mode : ${GRAPH_MODE}"
 echo "data dir : ${DATA_DIR}"
 echo "============================"
 
+
+echo "=======> IMPORT BASE META DATA DESC"
+run_virtuoso_cmd "ld_dir ('/appli/scripts/', 'meta.ttl', '${DOMAIN}/graph/metadata');"
+
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
+pat3='.*\.bz2$'
 
 for entry in "${DATA_DIR}"/*
 do
@@ -138,6 +143,30 @@ do
      fi
      echo "> final name is : ${final_name}"
      run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
+     
+     if  [[ $entry =~ $pat3 ]]; then
+     	echo "count nb lines and get date of prod";
+        nb_lines=$( bzcat $entry | wc -l );
+        last_line=$( bzcat $entry | tail -1 );
+        date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');  
+        
+        echo "NB CHAR date  ${#date}";
+        echo ">>>>>>>>>>>> last line :";
+        echo $last_line;
+        echo ">>>>>>>>>>>>>> DATE : $date"; 
+        echo ">>>>>>>>>>>>> nb lines : $nb_lines";
+	if [[  ${#date} == 10 ]];then
+		query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
+		run_virtuoso_cmd "$query_wasGeneratedAtTime"
+    	fi 
+	if [[ $nb_lines > 2 ]];then 
+		nbline=$nb_lines-2;
+		query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
+		run_virtuoso_cmd "$query_nbtiples"
+	fi
+	query_datadump="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> } };"
+        run_virtuoso_cmd "$query_datadump"
+     fi
   fi;
 done
 
