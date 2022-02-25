@@ -61,13 +61,15 @@ if [ $? -eq 2 ]; then
 fi
 
 
-echo "=======> IMPORT LAST META DATA DESC"
-cp -rf /dbpedia_fr-metadata.ttl ${DATA_DIR}
-sudo chmod +rw ${DATA_DIR}/dbpedia_fr-metadata.ttl
-run_virtuoso_cmd "ld_dir ('${DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
+echo "=======> IMPORT LAST META DATA DESC"
+cp -rf /dbpedia_fr-metadata.ttl ${DATA_DIR}
+sudo chmod +rw ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
+run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
+echo "delete old metadata"
+rm -rf ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl 
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
 run_virtuoso_cmd "registry_set ('dbp_domain', '${DOMAIN}');"
@@ -92,8 +94,7 @@ echo "============================"
 echo "graph mode : ${GRAPH_MODE}"
 echo "data dir : ${DATA_DIR}"
 echo "============================"
-echo "delete old metadata"
-rm -rf ${DATA_DIR}/dbpedia_fr-metadata.ttl 
+
 
 
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
