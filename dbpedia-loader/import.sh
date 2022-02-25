@@ -60,10 +60,12 @@ if [ $? -eq 2 ]; then
    exit 1
 fi
 
+bash compute_named_graphs_stats.sh
 
 
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
+
 echo "=======> IMPORT LAST META DATA DESC"
 cp -rf /dbpedia_fr-metadata.ttl ${DATA_DIR}
 sudo chmod +rw ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
