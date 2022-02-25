@@ -85,15 +85,6 @@ echo "[INFO] Installing VAD package 'fct_dav.vad'"
 run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/fct_dav.vad', 0);"
 
 
-
-echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
-# > we get the data_artefact name and we load it into a named graph based on 
-# REGEXPR 
-echo "============================"
-echo "graph mode : ${GRAPH_MODE}"
-echo "data dir : ${DATA_DIR}"
-echo "============================"
-
 echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
 get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } };'
 resp=$(run_virtuoso_cmd "$get_named_graph");
@@ -155,6 +146,14 @@ for graph in ${graph_list[@]}; do
 done
 
 echo ">>>>>>>>> END NAMED GRAPH STATS COMPUTATION"
+
+echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
+# > we get the data_artefact name and we load it into a named graph based on 
+# REGEXPR 
+echo "============================"
+echo "graph mode : ${GRAPH_MODE}"
+echo "data dir : ${DATA_DIR}"
+echo "============================"
 
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
