@@ -89,7 +89,7 @@ echo "============================"
 
 
 echo "=======> IMPORT BASE META DATA DESC"
-run_virtuoso_cmd "ld_dir ('/appli/scripts/', 'meta.ttl', '${DOMAIN}/graph/metadata');"
+run_virtuoso_cmd "ld_dir ('/root/', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
