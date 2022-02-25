@@ -144,24 +144,24 @@ do
      
      if  [[ $entry =~ $pat3 ]]; then
      	echo "count nb lines and get date of prod";
-        nb_lines=$( bzcat $entry | wc -l );
-        last_line=$( bzcat $entry | tail -1 );
-        date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');  
+        #nb_lines=$( bzcat $entry | wc -l );
+        #last_line=$( bzcat $entry | tail -1 );
+        #date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');  
         
-        echo "NB CHAR date  ${#date}";
-        echo ">>>>>>>>>>>> last line :";
-        echo $last_line;
-        echo ">>>>>>>>>>>>>> DATE : $date"; 
-        echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-	if [[  ${#date} == 10 ]];then
-		query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
-		run_virtuoso_cmd "$query_wasGeneratedAtTime"
-    	fi 
-	if [[ $nb_lines > 2 ]];then 
-		nbline=$nb_lines-2;
-		query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
-		run_virtuoso_cmd "$query_nbtiples"
-	fi
+        #echo "NB CHAR date  ${#date}";
+        #echo ">>>>>>>>>>>> last line :";
+        #echo $last_line;
+        #echo ">>>>>>>>>>>>>> DATE : $date"; 
+        #echo ">>>>>>>>>>>>> nb lines : $nb_lines";
+	#if [[  ${#date} == 10 ]];then
+	#	query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
+	#	run_virtuoso_cmd "$query_wasGeneratedAtTime"
+    	#fi 
+	#if [[ $nb_lines > 2 ]];then 
+	#	nbline=$(($nb-2));
+	#	query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
+	#	run_virtuoso_cmd "$query_nbtiples"
+	#fi
 	query_datadump="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> } };"
         run_virtuoso_cmd "$query_datadump"
      fi
