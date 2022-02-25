@@ -60,6 +60,12 @@ if [ $? -eq 2 ]; then
    exit 1
 fi
 
+
+echo "=======> IMPORT LAST META DATA DESC"
+cp -rf /dbpedia_fr-metadata.ttl ${DATA_DIR}
+sudo chmod +rw ${DATA_DIR}/dbpedia_fr-metadata.ttl
+run_virtuoso_cmd "ld_dir ('${DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
+
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
@@ -89,9 +95,6 @@ echo "============================"
 echo "delete old metadata"
 rm -rf ${DATA_DIR}/dbpedia_fr-metadata.ttl 
 
-echo "=======> IMPORT LAST META DATA DESC"
-cp -rf /dbpedia_fr-metadata.ttl ${DATA_DIR}
-run_virtuoso_cmd "ld_dir ('${DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
