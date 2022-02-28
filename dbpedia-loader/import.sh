@@ -3,7 +3,7 @@ bin="isql-vt"
 host="store"
 port=$STORE_ISQL_PORT
 user="dba"
-current_fileUPDT="~/last_update.txt";
+current_fileUPDT=~/last_update.txt;
 lastUpdate=`head -n 1 $current_fileUPDT`;
 echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
