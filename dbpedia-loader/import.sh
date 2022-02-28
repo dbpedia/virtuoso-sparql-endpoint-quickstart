@@ -67,7 +67,7 @@ echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] IMPORT LAST META DATA DESC"
-cp -rf /dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
+cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
 run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 
@@ -176,7 +176,7 @@ do
             nbline=$(($nb_lines-2));
             
 
-            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples "$nbline"^^xsd:integer . } ;"
+            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } ;"
             echo $query_nbtriples;
             run_virtuoso_cmd "$query_nbtiples"
         fi
