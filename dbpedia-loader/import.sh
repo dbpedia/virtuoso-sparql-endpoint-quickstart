@@ -164,10 +164,11 @@ do
         query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
         run_virtuoso_cmd "$query_wasGeneratedAtTime"
     fi 
-  
+    echo [[ $nb_lines > 2 ]];
 	if [[ $nb_lines > 2 ]];then 
 		nbline=$(($nb_lines-2));
 		query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
+        echo $query_nbtriples;
 		run_virtuoso_cmd "$query_nbtiples"
 	fi
 	query_datadump="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> } };"
