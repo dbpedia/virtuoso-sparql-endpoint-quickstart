@@ -163,7 +163,7 @@ do
             first_line=$( bzcat $entry | head -1 );
             date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
         else
-            echo "PB with last first line";
+            echo "PB with first line";
             if [[  ${#date} != 10 ]];then
                 date=$lastUpdate;
             fi
@@ -179,10 +179,10 @@ do
 
             query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer } ;"
             echo $query_nbtriples;
-            run_virtuoso_cmd "$query_nbtiples"
+            run_virtuoso_cmd "$query_nbtiples";
         fi
             query_datadump="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
-            run_virtuoso_cmd "$query_datadump"
+            run_virtuoso_cmd "$query_datadump";
         fi
     fi;
 done
@@ -192,9 +192,10 @@ echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
 get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } };'
 resp=$(run_virtuoso_cmd "$get_named_graph");
 graph_list=$(echo $resp | tr " " "\n" | grep -E "\/graph\/");
-
+pat4='^((?!metadata).)*$'
 echo "---->>> COMPUTE FOR EACH GRAPH STATS"
 for graph in ${graph_list[@]}; do
+     if [[ $entry =~ $pat4 ]]; then
         echo "<$graph>"
         
         echo "---- CLASS PARTITIONS stats";
@@ -246,6 +247,7 @@ for graph in ${graph_list[@]}; do
         echo "- nb distinct Objects by prop";
         prop_q3="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:propertyPartition [void:property ?p ; void:distinctObjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?o) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
         run_virtuoso_cmd "$prop_q3";
+   fi
 done
 
 echo ">>>>>>>>> END NAMED GRAPH STATS COMPUTATION"
