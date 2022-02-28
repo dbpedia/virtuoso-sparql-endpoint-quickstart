@@ -24,6 +24,7 @@ services:
       DBP_LANG: ${DBP_LANG}
       DBP_CATEGORY: ${DBP_CATEGORY}
     volumes:
+      - ${lastUpdateDate}:/root/lastUpdate.txt
       - ${DATA_DIR}:/root/data
     links:
       - store
