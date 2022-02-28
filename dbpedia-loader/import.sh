@@ -4,6 +4,7 @@ host="store"
 port=$STORE_ISQL_PORT
 user="dba"
 lastUpdate=`head -n 1 $fileUPDT`;
+echo "WE GET THE LAST UPDATE : $lastUpdate";
 
 run_virtuoso_cmd () {
  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$STORE_DBA_PASSWORD" 2>&1`
