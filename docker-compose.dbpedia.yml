@@ -21,6 +21,7 @@ services:
       STORE_ISQL_PORT: 1111
       DATA_DIR: /root/data
       DOMAIN: ${DOMAIN}
+      fileUPDT: ${fileUPDT}
       DBP_LANG: ${DBP_LANG}
       DBP_CATEGORY: ${DBP_CATEGORY}
     volumes:
