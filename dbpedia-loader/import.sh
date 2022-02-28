@@ -67,8 +67,8 @@ echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] IMPORT LAST META DATA DESC"
-cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
-cp -rf ./dbpedia_fr-metadata.ttl ${DATA_DIR}
+cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
+cp -rf ./dbpedia_fr-metadata.ttl ${DATA_DIR}/dbpedia_fr-metadata.ttl
 if test -f "${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl"; then
 	echo "dbpedia_fr-metadata.ttl here ";
 else
