@@ -66,13 +66,7 @@ fi
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
-echo "[INFO] IMPORT LAST META DATA DESC"
-if test -f "${STORE_DATA_DIR}/meta/dbpedia_fr-metadata.ttl"; then
-	echo "dbpedia_fr-metadata.ttl here ";
-else
-	echo "dbpedia_fr-metadata.ttl don't exist";
-fi
-
+echo "[INFO] ADD META DATA"
 resp=$(run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}/meta', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');")
 echo "========================================================================"
 echo $resp
@@ -154,7 +148,7 @@ do
      echo "> final name is : ${final_name}"
      run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
      
-    if  [[ $entry =~ $pat3 ]] &&  [[ $entry =~ $pat4 ]];; then
+    if  [[ $entry =~ $pat3 ]] &&  [[ $entry =~ $pat4 ]]; then
         echo "count nb lines and get date of prod";
         nb_lines=$( bzcat $entry | wc -l );
         last_line=$( bzcat $entry | tail -1 );
