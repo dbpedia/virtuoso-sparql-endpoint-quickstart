@@ -176,7 +176,7 @@ do
             nbline=$(($nb_lines-2));
             
 
-            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } ;"
+            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer } ;"
             echo $query_nbtriples;
             run_virtuoso_cmd "$query_nbtiples"
         fi
