@@ -3,6 +3,7 @@ bin="isql-vt"
 host="store"
 port=$STORE_ISQL_PORT
 user="dba"
+lastUpdate=`head -n 1 $fileUPDT`;
 
 run_virtuoso_cmd () {
  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$STORE_DBA_PASSWORD" 2>&1`
@@ -155,15 +156,18 @@ do
         echo $last_line;
         echo ">>>>>>>>>>>>>> DATE : $date"; 
         echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-	if [[  ${#date} != 10 ]];then
-        query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
-        run_virtuoso_cmd "$query_wasGeneratedAtTime"
-    else
+    if [[  ${#date} != 10 ]];then
         first_line=$( bzcat $entry | head -1 );
         date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
-        query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
-        run_virtuoso_cmd "$query_wasGeneratedAtTime"
+    else
+    	if [[  ${#date} != 10 ]];then
+   		date=$lastUpdate;
+	fi
     fi 
+    
+    date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
+    query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
+    run_virtuoso_cmd "$query_wasGeneratedAtTime"
     echo [[ $nb_lines > 2 ]];
 	if [[ $nb_lines > 2 ]];then 
 		nbline=$(($nb_lines-2));
