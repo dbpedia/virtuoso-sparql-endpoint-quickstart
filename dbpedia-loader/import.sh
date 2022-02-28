@@ -67,8 +67,6 @@ echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] IMPORT LAST META DATA DESC"
-cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
-cp -rf ./dbpedia_fr-metadata.ttl ${DATA_DIR}/dbpedia_fr-metadata.ttl
 if test -f "${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl"; then
 	echo "dbpedia_fr-metadata.ttl here ";
 else
@@ -105,6 +103,7 @@ echo "============================"
 pat1='.*\.(nt|nq|owl|rdf|trig|ttl|xml|gz|bz2)$' # IF ENDING BY ACCEPTED EXTENSIONS
 pat2='([a-z\-]+)_'
 pat3='.*\.bz2$'
+pat4='^((?!metadata).)*$'
 
 for entry in "${DATA_DIR}"/*
 do
@@ -155,7 +154,7 @@ do
      echo "> final name is : ${final_name}"
      run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
      
-    if  [[ $entry =~ $pat3 ]]; then
+    if  [[ $entry =~ $pat3 ]] &&  [[ $entry =~ $pat4 ]];; then
         echo "count nb lines and get date of prod";
         nb_lines=$( bzcat $entry | wc -l );
         last_line=$( bzcat $entry | tail -1 );
@@ -200,7 +199,6 @@ echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
 get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } };'
 resp=$(run_virtuoso_cmd "$get_named_graph");
 graph_list=$(echo $resp | tr " " "\n" | grep -E "\/graph\/");
-pat4='^((?!metadata).)*$'
 echo "---->>> COMPUTE FOR EACH GRAPH STATS"
 for graph in ${graph_list[@]}; do
      if [[ $entry =~ $pat4 ]]; then
