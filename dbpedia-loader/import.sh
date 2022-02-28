@@ -68,6 +68,7 @@ run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] IMPORT LAST META DATA DESC"
 cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
+cat ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
 run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 
