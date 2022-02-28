@@ -146,7 +146,7 @@ do
      echo "> final name is : ${final_name}"
      run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '${fn}', '${DOMAIN}/graph/${final_name}');"
      
-     if  [[ $entry =~ $pat3 ]]; then
+    if  [[ $entry =~ $pat3 ]]; then
         echo "count nb lines and get date of prod";
         nb_lines=$( bzcat $entry | wc -l );
         last_line=$( bzcat $entry | tail -1 );
@@ -157,33 +157,33 @@ do
         echo $last_line;
         echo ">>>>>>>>>>>>>> DATE : $date"; 
         echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-    if [[  ${#date} != 10 ]];then
-        echo "PB with last line";
-        first_line=$( bzcat $entry | head -1 );
-        date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
-    else
-        echo "PB with last first line";
         if [[  ${#date} != 10 ]];then
-        date=$lastUpdate;
-    fi
-    fi 
+            echo "PB with last line";
+            first_line=$( bzcat $entry | head -1 );
+            date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
+        else
+            echo "PB with last first line";
+            if [[  ${#date} != 10 ]];then
+                date=$lastUpdate;
+            fi
+        fi 
     
-    query_wasGeneratedAtTime="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . };"
-    run_virtuoso_cmd "$query_wasGeneratedAtTime";
+        query_wasGeneratedAtTime="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . };"
+        run_virtuoso_cmd "$query_wasGeneratedAtTime";
 
-    echo [[ $nb_lines > 2 ]];
-    if [[ $nb_lines > 2 ]];then 
-        nbline=$(($nb_lines-2));
-        
+        echo [[ $nb_lines > 2 ]];
+        if [[ $nb_lines > 2 ]];then 
+            nbline=$(($nb_lines-2));
+            
 
-        query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples "$nbline"^^xsd:integer . } ;"
-        echo $query_nbtriples;
-        run_virtuoso_cmd "$query_nbtiples"
-    fi
-        query_datadump="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
-        run_virtuoso_cmd "$query_datadump"
-     fi
-  fi;
+            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples "$nbline"^^xsd:integer . } ;"
+            echo $query_nbtriples;
+            run_virtuoso_cmd "$query_nbtiples"
+        fi
+            query_datadump="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
+            run_virtuoso_cmd "$query_datadump"
+        fi
+    fi;
 done
 
 echo "[DATA IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
