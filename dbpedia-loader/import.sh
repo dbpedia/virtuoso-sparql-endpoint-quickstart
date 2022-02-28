@@ -155,16 +155,22 @@ do
         echo $last_line;
         echo ">>>>>>>>>>>>>> DATE : $date"; 
         echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-	if [[  ${#date} == 10 ]];then
-		query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
-		run_virtuoso_cmd "$query_wasGeneratedAtTime"
-    	fi 
+	if [[  ${#date} != 10 ]];then
+        query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
+        run_virtuoso_cmd "$query_wasGeneratedAtTime"
+    else
+        first_line=$( bzcat $entry | head -1 );
+        date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
+        query_wasGeneratedAtTime="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . } };"
+        run_virtuoso_cmd "$query_wasGeneratedAtTime"
+    fi 
+  
 	if [[ $nb_lines > 2 ]];then 
-		nbline=$(($nb-2));
-		query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
+		nbline=$(($nb_lines-2));
+		query_nbtriples="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer . } };"
 		run_virtuoso_cmd "$query_nbtiples"
 	fi
-	query_datadump="SPARQL INSERT { GRAPH <${DOMAIN}/graph/${final_name}> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> } };"
+	query_datadump="SPARQL INSERT { GRAPH <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> } };"
         run_virtuoso_cmd "$query_datadump"
      fi
   fi;
@@ -182,52 +188,52 @@ for graph in ${graph_list[@]}; do
         
         echo "---- CLASS PARTITIONS stats";
         echo "- classes";
-        class_q1="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ] . } WHERE {SELECT DISTINCT(?c) FROM <$graph>  { ?s a ?c . } };";
+        class_q1="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ] . } WHERE {SELECT DISTINCT(?c) FROM <$graph>  { ?s a ?c . } };";
         run_virtuoso_cmd "$class_q1";
 
         echo "- nb entities per classes";
-        class_q2="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?class ; void:entities ?count ] . } WHERE {{ SELECT ?class (count(?instance) AS ?count) WHERE {SELECT DISTINCT ?class ?instance FROM <$graph> WHERE {?instance a ?class } } GROUP BY ?class } };";
+        class_q2="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?class ; void:entities ?count ] . } WHERE {{ SELECT ?class (count(?instance) AS ?count) WHERE {SELECT DISTINCT ?class ?instance FROM <$graph> WHERE {?instance a ?class } } GROUP BY ?class } };";
         run_virtuoso_cmd "$class_q2";
 
         echo "- nb triplet per classes";
-        class_q3="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ; void:triples ?x ] . } WHERE {{ SELECT (COUNT(?p) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
+        class_q3="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ; void:triples ?x ] . } WHERE {{ SELECT (COUNT(?p) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
         run_virtuoso_cmd "$class_q3";
 
         echo "- nb prop by class";
-        class_q4="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ; void:properties ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?p) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
+        class_q4="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ; void:properties ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?p) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
         run_virtuoso_cmd "$class_q4";
 
         echo "- besoin d'explications";
-        class_q5="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ; void:classes ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?d) AS ?x) ?c  FROM <$graph> WHERE { ?s a ?c , ?d } GROUP BY ?c } };";
+        class_q5="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ; void:classes ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?d) AS ?x) ?c  FROM <$graph> WHERE { ?s a ?c , ?d } GROUP BY ?c } };";
         run_virtuoso_cmd "$class_q5";
 
         echo "- distinct subject per classes";
-        class_q6="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ; void:distinctSubjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c } GROUP BY ?c } };";
+        class_q6="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ; void:distinctSubjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c } GROUP BY ?c } };";
         run_virtuoso_cmd "$class_q6";
 
         echo "- distinct object per classes";
-        class_q7="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph>  void:classPartition [void:class ?c ; void:distinctObjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?o) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
+        class_q7="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph>  void:classPartition [void:class ?c ; void:distinctObjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?o) AS ?x) ?c FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c } };";
         run_virtuoso_cmd "$class_q7";
 
         echo "- nb triples by prop";
-        class_q8="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:classPartition [void:class ?c ; void:propertyPartition [void:property ?p ; void:triples ?x ] ] . } WHERE {{ SELECT ?c (COUNT(?o) AS ?x) ?p FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p } };";
+        class_q8="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ; void:propertyPartition [void:property ?p ; void:triples ?x ] ] . } WHERE {{ SELECT ?c (COUNT(?o) AS ?x) ?p FROM <$graph> WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p } };";
         run_virtuoso_cmd "$class_q8";
 
         echo "- nb subj distinct by prop";
-        class_q9="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph>  void:classPartition [void:class ?c ; void:propertyPartition [void:property ?p ; void:distinctSubjects ?x ] ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?c ?p FROM <$graph>  WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p } };";
+        class_q9="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph>  void:classPartition [void:class ?c ; void:propertyPartition [void:property ?p ; void:distinctSubjects ?x ] ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?c ?p FROM <$graph>  WHERE { ?s a ?c ; ?p ?o } GROUP BY ?c ?p } };";
         run_virtuoso_cmd "$class_q9";
 
         echo "---- Property PARTITIONS";
         echo "-nb triples by property";
-        prop_q1="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:propertyPartition [void:property ?p ; void:triples ?x ] . } WHERE {{ SELECT (COUNT(?o) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
+        prop_q1="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:propertyPartition [void:property ?p ; void:triples ?x ] . } WHERE {{ SELECT (COUNT(?o) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
         run_virtuoso_cmd "$prop_q1";
 
         echo "- nb distinct Subject by prop";
-        prop_q2="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:propertyPartition [void:property ?p ; void:distinctSubjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
+        prop_q2="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:propertyPartition [void:property ?p ; void:distinctSubjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?s) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
         run_virtuoso_cmd "$prop_q2";
 
         echo "- nb distinct Objects by prop";
-        prop_q3="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO {<$graph> void:propertyPartition [void:property ?p ; void:distinctObjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?o) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
+        prop_q3="SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:propertyPartition [void:property ?p ; void:distinctObjects ?x ] . } WHERE {{ SELECT (COUNT(DISTINCT ?o) AS ?x) ?p FROM <$graph> WHERE { ?s ?p ?o } GROUP BY ?p } };";
         run_virtuoso_cmd "$prop_q3";
 done
 
@@ -270,8 +276,6 @@ run_virtuoso_cmd 'rdf_geo_fill();'
 echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 echo "[INFO] bulk load done; terminating loader"
-
 echo "[INFO] update of lookup tables"
 run_virtuoso_cmd 'urilbl_ac_init_db();'
 run_virtuoso_cmd 's_rank();'
-
