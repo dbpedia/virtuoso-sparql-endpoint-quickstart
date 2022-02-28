@@ -27,6 +27,6 @@ services:
     volumes:
       - ${DATA_DIR}:/root/data
       - ${fileUPDT}:/root/last_update.txt
-      - ./dbpedia-loader/dbpedia_fr-metadata.ttl:root/dbpedia_fr-metadata.ttl
+      - ./dbpedia-loader/dbpedia_fr-metadata.ttl:/usr/share/proj/dbpedia_fr-metadata.ttl
     links:
       - store
