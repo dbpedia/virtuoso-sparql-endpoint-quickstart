@@ -293,7 +293,7 @@ db_fr:sparql-service
     dct:title "Shortened abstracts from Wikipedia articles"@en;
     dct:description "The text before the table of contents of Wikipedia articles is shortened to approx. 2-3 sentences"@en;
     prov:was_derived <https://databus.dbpedia.org/dbpedia/text/short-abstracts/>; 
-    void:vocabulary  dbo: .
+    void:vocabulary  rdfs: .
 
 <http://fr.dbpedia.org/graph/dbpedia_wikidata_geo-coordinates>
     a sd:Graph, sd:NamedGraph,  dcat:Dataset, void:Dataset,schema:Dataset, prov:Entity; 
