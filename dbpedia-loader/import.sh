@@ -69,9 +69,8 @@ run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 echo "[INFO] IMPORT LAST META DATA DESC"
 cp -rf ./dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
 cp -rf ./dbpedia_fr-metadata.ttl ${DATA_DIR}
-cat ${STORE_DATA_DIR}/dbpedia_fr-metadata.ttl
-cat ${DATA_DIR}/dbpedia_fr-metadata.ttl
 run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
+run_virtuoso_cmd "ld_dir ('${DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
@@ -171,7 +170,7 @@ do
             fi
         fi 
     
-        query_wasGeneratedAtTime="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime \"$date\"^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished \"$date\"^^xsd:date . };"
+        query_wasGeneratedAtTime="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime '${date}'^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished '${date}'^^xsd:date . };"
         run_virtuoso_cmd "$query_wasGeneratedAtTime";
 
         echo [[ $nb_lines > 2 ]];
@@ -179,7 +178,7 @@ do
             nbline=$(($nb_lines-2));
             
 
-            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples \"$nbline\"^^xsd:integer } ;"
+            query_nbtriples="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer } ;"
             echo $query_nbtriples;
             run_virtuoso_cmd "$query_nbtiples";
         fi
