@@ -72,6 +72,7 @@ cp -rf ./dbpedia_fr-metadata.ttl ${DATA_DIR}
 run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 run_virtuoso_cmd "ld_dir ('${DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 
+echo "[INFO] WE ARE HERE "
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
 run_virtuoso_cmd "registry_set ('dbp_domain', '${DOMAIN}');"
