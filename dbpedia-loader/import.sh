@@ -3,7 +3,8 @@ bin="isql-vt"
 host="store"
 port=$STORE_ISQL_PORT
 user="dba"
-lastUpdate=`head -n 1 $fileUPDT`;
+current_fileUPDT="./last_update.txt";
+lastUpdate=`head -n 1 $current_fileUPDT`;
 echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
 run_virtuoso_cmd () {
