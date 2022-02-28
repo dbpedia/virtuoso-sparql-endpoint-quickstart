@@ -63,7 +63,7 @@ fi
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
-echo "=======> IMPORT LAST META DATA DESC"
+echo "[INFO] IMPORT LAST META DATA DESC"
 cp -rf /dbpedia_fr-metadata.ttl ${STORE_DATA_DIR}
 run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');"
 echo "delete old metadata"
@@ -83,7 +83,7 @@ run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0)
 echo "[INFO] Installing VAD package 'fct_dav.vad'"
 run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/fct_dav.vad', 0);"
 
-echo "[CUSTOM PART IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
+echo "[DATA IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
 # > we get the data_artefact name and we load it into a named graph based on 
 # REGEXPR 
 echo "============================"
@@ -169,6 +169,12 @@ do
      fi
   fi;
 done
+
+echo "[DATA IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
+echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
+get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } };'
+resp=$(run_virtuoso_cmd "$get_named_graph");
+graph_list=$(echo $resp | tr " " "\n" | grep -E "\/graph\/");
 
 echo "---->>> COMPUTE FOR EACH GRAPH STATS"
 for graph in ${graph_list[@]}; do
