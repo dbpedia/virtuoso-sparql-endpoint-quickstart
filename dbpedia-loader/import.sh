@@ -3,7 +3,6 @@ bin="isql-vt"
 host="store"
 port=$STORE_ISQL_PORT
 user="dba"
-current_fileUPDT=~/last_update.txt;
 lastUpdate=`head -n 1 $current_fileUPDT`;
 echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
@@ -150,34 +149,39 @@ do
     if  [[ $entry =~ $pat3 ]] &&  [[ ! $entry =~ $pat4 ]]; then
         echo "count nb lines and get date of prod";
         nb_lines=$( bzcat $entry | wc -l );
-        last_line=$( bzcat $entry | tail -1 );
-        date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');  
-        
-        echo "NB CHAR date  ${#date}";
-        echo ">>>>>>>>>>>> last line :";
-        echo $last_line;
-        echo ">>>>>>>>>>>>>> DATE : $date"; 
         echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-        if [[  ${#date} != 10 ]];then
-            echo "PB with last line";
-            first_line=$( bzcat $entry | head -1 );
-            date=$(echo $last_line  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');
-        else
-            echo "PB with first line";
-            if [[  ${#date} != 10 ]];then
-                date=$lastUpdate;
-            fi
-        fi 
-    
-        query_wasGeneratedAtTime="SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime '${date}'^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished '${date}'^^xsd:date . };"
-        run_virtuoso_cmd "$query_wasGeneratedAtTime";
-
-        echo [[ $nb_lines > 2 ]];
-        if [[ $nb_lines > 2 ]];then 
-            nbline=$(($nb_lines-2));
-            run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
+        # BEFORE WE USED DATE FROM FIRST LINE... 
+        #last_line=$( bzcat $entry | tail -1 );
+        #if [[  ${#date} != 10 ]];then
+        
+        #### NOW WE USED THE DATE FROM FILE NAME
+        date=$(echo $entry  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');         
+        echo ">>>>>>>>>>>>>> DATE : $date"; 
+        resp=$(run_virtuoso_cmd 'SPARQL SELECT DISTINCT(?s) COUNT(?d) FROM <${DOMAIN}/graph/metadata> WHERE {?s prov:wasGeneratedAtTime ?d . FILTER(?s = <${DOMAIN}/graph/${final_name}> )} ;')
+        nb=$(echo $resp | awk '{print $4}')
+        if [ "$nb" -eq "0" ];then
+           run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime '${date}'^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished '${date}'^^xsd:date . };"
         fi
-            run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
+        
+        #echo [[ $nb_lines > 2 ]];
+        
+        if [[ $nb_lines > 2 ]];then 
+            resp=$(run_virtuoso_cmd 'SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE {<${DOMAIN}/graph/${final_name}> void:triples ?nb};' )
+            nb=$(echo $resp |  awk '{print $5}')
+            if [ "$nb" -eq "0" ];then
+               nbline=$(($nb_lines-2));
+               run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
+            else
+               
+               nbline=$(($nb_lines-2));
+               new=$(($nbline+$nb))
+               run_virtuoso_cmd  "SPARQL WITH <${DOMAIN}/graph/metadata> DELETE {<${DOMAIN}/graph/${final_name}> void:triples ${nb}. } INSERT {<${DOMAIN}/graph/${final_name}> void:triples ${new}. } WHERE {<${DOMAIN}/graph/${final_name}> void:triples ${nb}. };"
+            fi
+        fi
+       
+
+        
+        run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
         fi
     fi;
 done
@@ -191,8 +195,10 @@ echo "---->>> COMPUTE FOR EACH GRAPH STATS"
 for graph in ${graph_list[@]}; do
      if [[ ! $graph =~ $pat4 ]]; then
         echo "<$graph>"
-        
-        echo "---- CLASS PARTITIONS stats";
+        echo "- classes";
+        run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:nbtriples [void:class ?c ] . } WHERE {SELECT DISTINCT(?c) FROM <$graph>  { ?s a ?c . } };"
+       
+       echo "---- CLASS PARTITIONS stats";
         echo "- classes";
         run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> {<$graph> void:classPartition [void:class ?c ] . } WHERE {SELECT DISTINCT(?c) FROM <$graph>  { ?s a ?c . } };"
 
