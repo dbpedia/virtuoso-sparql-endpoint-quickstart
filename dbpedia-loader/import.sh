@@ -166,14 +166,14 @@ do
         #echo [[ $nb_lines > 2 ]];
         
         if [[ $nb_lines > 2 ]];then 
+        
+            nbline=$(($nb_lines-2));
             resp=$(run_virtuoso_cmd 'SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE {<${DOMAIN}/graph/${final_name}> void:triples ?nb};' )
             nb=$(echo $resp |  awk '{print $5}')
             if [ "$nb" -eq "0" ];then
                nbline=$(($nb_lines-2));
                run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
             else
-               
-               nbline=$(($nb_lines-2));
                new=$(($nbline+$nb))
                run_virtuoso_cmd  "SPARQL WITH <${DOMAIN}/graph/metadata> DELETE {<${DOMAIN}/graph/${final_name}> void:triples ${nb}. } INSERT {<${DOMAIN}/graph/${final_name}> void:triples ${new}. } WHERE {<${DOMAIN}/graph/${final_name}> void:triples ${nb}. };"
             fi
