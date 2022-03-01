@@ -197,10 +197,11 @@ done
 
 echo "[DATA IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
 echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
-get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } };'
+get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } } GROUP BY ?graphName ;'
 resp=$(run_virtuoso_cmd "$get_named_graph");
 graph_list=$(echo $resp | tr " " "\n" | grep -E "\/graph\/");
 echo "---->>> COMPUTE FOR EACH GRAPH STATS"
+pat4='metadata'
 for graph in ${graph_list[@]}; do
      if [[ ! $graph =~ $pat4 ]]; then
         echo "<$graph>"
