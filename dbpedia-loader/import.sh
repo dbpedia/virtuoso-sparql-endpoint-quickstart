@@ -67,7 +67,7 @@ echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] ADD META DATA"
-resp=$(run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}/meta', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');")
+resp=$(run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');")
 echo "========================================================================"
 echo $resp
 echo "========================================================================"
