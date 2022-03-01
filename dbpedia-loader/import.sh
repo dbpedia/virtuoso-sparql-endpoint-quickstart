@@ -157,7 +157,9 @@ do
         date=$(echo $entry  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');         
         echo ">>>>>>>>>>>>>> DATE : $date"; 
         resp=$(run_virtuoso_cmd 'SPARQL SELECT COUNT(?d) FROM <${DOMAIN}/graph/metadata> WHERE {?s prov:wasGeneratedAtTime ?d . FILTER(?s = <${DOMAIN}/graph/${final_name}> )} ;')
-     
+        echo "==========="
+        echo $resp
+        echo "==========="
         nb=$(echo $resp | awk '{print $4}')
         echo " INSIDE ? ${nb}"
         if [ "$nb" -eq "0" ];then
@@ -171,7 +173,11 @@ do
         
             nbline=$(($nb_lines-2));
             resp=$(run_virtuoso_cmd 'SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE {<${DOMAIN}/graph/${final_name}> void:triples ?nb};' )
+            echo "==========="
+            echo $resp
+            echo "==========="
             nb=$(echo $resp |  awk '{print $5}')
+            
             echo " INSIDE ? ${nb}"
             if [ "$nb" -eq "0" ];then
                nbline=$(($nb_lines-2));
