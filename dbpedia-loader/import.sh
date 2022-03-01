@@ -156,7 +156,7 @@ do
         #### NOW WE USED THE DATE FROM FILE NAME
         date=$(echo $entry  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');         
         echo ">>>>>>>>>>>>>> DATE : $date"; 
-        resp=$(run_virtuoso_cmd 'SPARQL SELECT DISTINCT(?s) COUNT(?d) FROM <${DOMAIN}/graph/metadata> WHERE {?s prov:wasGeneratedAtTime ?d . FILTER(?s = <${DOMAIN}/graph/${final_name}> )} ;')
+        resp=$(run_virtuoso_cmd 'SPARQL SELECT COUNT(?d) FROM <${DOMAIN}/graph/metadata> WHERE {?s prov:wasGeneratedAtTime ?d . FILTER(?s = <${DOMAIN}/graph/${final_name}> )} ;')
      
         nb=$(echo $resp | awk '{print $4}')
         echo " INSIDE ? ${nb}"
