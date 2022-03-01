@@ -68,6 +68,7 @@ run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
 echo "[INFO] ADD META DATA"
 resp=$(run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}/meta', 'dbpedia_fr-metadata.ttl', '${DOMAIN}/graph/metadata');")
+$(run_virtuoso_cmd "DB.DBA.TTLP_MT (file_to_string_output ('${STORE_DATA_DIR}/meta/dbpedia_fr-metadata.ttl'), '', '${DOMAIN}/graph/metadata');" 
 echo "========================================================================"
 echo $resp
 echo "========================================================================"
