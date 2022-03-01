@@ -149,7 +149,6 @@ do
     if  [[ $entry =~ $pat3 ]] &&  [[ ! $entry =~ $pat4 ]]; then
         echo "count nb lines and get date of prod";
         nb_lines=$( bzcat $entry | wc -l );
-        echo ">>>>>>>>>>>>> nb lines : $nb_lines";
         # BEFORE WE USED DATE FROM FIRST LINE... 
         #last_line=$( bzcat $entry | tail -1 );
         #if [[  ${#date} != 10 ]];then
@@ -158,18 +157,22 @@ do
         date=$(echo $entry  | grep -Eo '[[:digit:]]{4}.[[:digit:]]{2}.[[:digit:]]{2}');         
         echo ">>>>>>>>>>>>>> DATE : $date"; 
         resp=$(run_virtuoso_cmd 'SPARQL SELECT DISTINCT(?s) COUNT(?d) FROM <${DOMAIN}/graph/metadata> WHERE {?s prov:wasGeneratedAtTime ?d . FILTER(?s = <${DOMAIN}/graph/${final_name}> )} ;')
+     
         nb=$(echo $resp | awk '{print $4}')
+        echo " INSIDE ? ${nb}"
         if [ "$nb" -eq "0" ];then
            run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> prov:wasGeneratedAtTime '${date}'^^xsd:date . <${DOMAIN}/graph/${final_name}>  schema:datePublished '${date}'^^xsd:date . };"
         fi
         
         #echo [[ $nb_lines > 2 ]];
         
+        echo ">>>>>>>>>>>>> nb lines : $nb_lines";
         if [[ $nb_lines > 2 ]];then 
         
             nbline=$(($nb_lines-2));
             resp=$(run_virtuoso_cmd 'SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE {<${DOMAIN}/graph/${final_name}> void:triples ?nb};' )
             nb=$(echo $resp |  awk '{print $5}')
+            echo " INSIDE ? ${nb}"
             if [ "$nb" -eq "0" ];then
                nbline=$(($nb_lines-2));
                run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
