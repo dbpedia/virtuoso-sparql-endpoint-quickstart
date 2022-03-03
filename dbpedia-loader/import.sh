@@ -195,7 +195,49 @@ do
     fi;
 done
 
-echo "[DATA IMPORT] HERE WE ENTERING IN THE CUSTOM PART"
+######################################################### OLD PROCESS
+# > load every data inside the default graph 
+
+#ensure that all supported formats get into the load list
+#(since we have to excluse graph-files *.* won't do the trick
+### COMMENTED
+#echo "[INFO] registring RDF documents for import"
+#for ext in nt nq owl rdf trig ttl xml gz bz2; do
+# echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
+ #run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
+#done
+
+echo "[INFO] deactivating auto-indexing"
+run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
+
+echo '[INFO] Starting load process...';
+
+load_cmds=`cat <<EOF
+log_enable(2);
+checkpoint_interval(-1);
+set isolation = 'uncommitted';
+rdf_loader_run();
+log_enable(1);
+checkpoint_interval(60);
+EOF`
+run_virtuoso_cmd "$load_cmds";
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
+echo "[INFO] re-activating auto-indexing"
+run_virtuoso_cmd "DB.DBA.RDF_OBJ_FT_RULE_ADD (null, null, 'All');"
+run_virtuoso_cmd 'DB.DBA.VT_INC_INDEX_DB_DBA_RDF_OBJ ();'
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
+echo "[INFO] update/filling of geo index"
+run_virtuoso_cmd 'rdf_geo_fill();'
+echo "[INFO] making checkpoint..."
+run_virtuoso_cmd 'checkpoint;'
+echo "[INFO] bulk load done; terminating loader"
+echo "[INFO] update of lookup tables"
+run_virtuoso_cmd 'urilbl_ac_init_db();'
+run_virtuoso_cmd 's_rank();'
+
+echo "[STATS TIME]"
 echo "---->>> ASK FIRST THE LIST OF NAMED GRAPH"
 get_named_graph='SPARQL SELECT DISTINCT(?graphName) WHERE {GRAPH ?graphName {?s ?p ?o } } GROUP BY ?graphName ;'
 resp=$(run_virtuoso_cmd "$get_named_graph");
@@ -256,44 +298,3 @@ run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${
 run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}> void:triples ?no . } WHERE { SELECT (COUNT(*) AS ?no) { ?s ?p ?o } };"
 run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}> void:properties ?no . } WHERE { SELECT COUNT(distinct ?p) AS ?no  { ?s ?p ?o } };"
 echo ">>>>>>>>> END NAMED GRAPH STATS COMPUTATION"
-######################################################### OLD PROCESS
-# > load every data inside the default graph 
-
-#ensure that all supported formats get into the load list
-#(since we have to excluse graph-files *.* won't do the trick
-### COMMENTED
-#echo "[INFO] registring RDF documents for import"
-#for ext in nt nq owl rdf trig ttl xml gz bz2; do
-# echo "[INFO] ${STORE_DATA_DIR}.${ext} for import"
- #run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
-#done
-
-echo "[INFO] deactivating auto-indexing"
-run_virtuoso_cmd "DB.DBA.VT_BATCH_UPDATE ('DB.DBA.RDF_OBJ', 'ON', NULL);"
-
-echo '[INFO] Starting load process...';
-
-load_cmds=`cat <<EOF
-log_enable(2);
-checkpoint_interval(-1);
-set isolation = 'uncommitted';
-rdf_loader_run();
-log_enable(1);
-checkpoint_interval(60);
-EOF`
-run_virtuoso_cmd "$load_cmds";
-echo "[INFO] making checkpoint..."
-run_virtuoso_cmd 'checkpoint;'
-echo "[INFO] re-activating auto-indexing"
-run_virtuoso_cmd "DB.DBA.RDF_OBJ_FT_RULE_ADD (null, null, 'All');"
-run_virtuoso_cmd 'DB.DBA.VT_INC_INDEX_DB_DBA_RDF_OBJ ();'
-echo "[INFO] making checkpoint..."
-run_virtuoso_cmd 'checkpoint;'
-echo "[INFO] update/filling of geo index"
-run_virtuoso_cmd 'rdf_geo_fill();'
-echo "[INFO] making checkpoint..."
-run_virtuoso_cmd 'checkpoint;'
-echo "[INFO] bulk load done; terminating loader"
-echo "[INFO] update of lookup tables"
-run_virtuoso_cmd 'urilbl_ac_init_db();'
-run_virtuoso_cmd 's_rank();'
