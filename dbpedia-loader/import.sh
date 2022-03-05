@@ -6,6 +6,8 @@ user="dba"
 lastUpdate=`head -n 1 $current_fileUPDT`;
 echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
+touch ${VIRTUOSO_DATABASE_DIR}/download_locker.lck;
+
 run_virtuoso_cmd () {
  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$STORE_DBA_PASSWORD" 2>&1`
  VIRT_RETCODE=$?
@@ -287,4 +289,5 @@ echo "[INFO] update of lookup tables"
 run_virtuoso_cmd 'urilbl_ac_init_db();'
 run_virtuoso_cmd 's_rank();'
 
+rm "${VIRTUOSO_DATABASE_DIR}/download_locker.lck";
 
