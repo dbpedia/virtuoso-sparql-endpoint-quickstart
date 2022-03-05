@@ -148,7 +148,7 @@ do
      
     if  [[ $entry =~ $pat3 ]] &&  [[ ! $entry =~ $pat4 ]]; then
         echo "count nb lines and get date of prod";
-        nb_lines=$( bzcat $entry | wc -l );
+        #nb_lines=$( bzcat $entry | wc -l );
         # BEFORE WE USED DATE FROM FIRST LINE... 
         #last_line=$( bzcat $entry | tail -1 );
         #if [[  ${#date} != 10 ]];then
@@ -168,25 +168,25 @@ do
         
         #echo [[ $nb_lines > 2 ]];
         
-        echo ">>>>>>>>>>>>> nb lines : $nb_lines";
-        if [[ $nb_lines > 2 ]];then 
+        #echo ">>>>>>>>>>>>> nb lines : $nb_lines";
+        #if [[ $nb_lines > 2 ]];then 
         
-            nbline=$(($nb_lines-2));
-            resp=$(run_virtuoso_cmd "SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE { <${DOMAIN}/graph/${final_name}> void:triples ?nb};" )
-            echo "==========="
-            echo $resp
-            echo "==========="
-            nb=$(echo $resp |  awk '{print $5}')
+         #   nbline=$(($nb_lines-2));
+          #  resp=$(run_virtuoso_cmd "SPARQL SELECT ?nb FROM <${DOMAIN}/graph/metadata> WHERE { <${DOMAIN}/graph/${final_name}> void:triples ?nb};" )
+           # echo "==========="
+            #echo $resp
+            #echo "==========="
+            #nb=$(echo $resp |  awk '{print $5}')
             
-            echo " INSIDE ? ${nb}"
-            if [ "$nb" -eq "0" ];then
-               nbline=$(($nb_lines-2));
-               run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
-            else
-               new=$(($nbline+$nb))
-               run_virtuoso_cmd  "SPARQL WITH <${DOMAIN}/graph/metadata> DELETE { <${DOMAIN}/graph/${final_name}> void:triples ${nb}. } INSERT { <${DOMAIN}/graph/${final_name}> void:triples ${new}. } WHERE { <${DOMAIN}/graph/${final_name}> void:triples ${nb}. };"
-            fi
-        fi
+            #echo " INSIDE ? ${nb}"
+            #if [ "$nb" -eq "0" ];then
+            #   nbline=$(($nb_lines-2));
+            #   run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> { <${DOMAIN}/graph/${final_name}> void:triples '${nbline}'^^xsd:integer };"
+            #else
+            #   new=$(($nbline+$nb))
+            #   run_virtuoso_cmd  "SPARQL WITH <${DOMAIN}/graph/metadata> DELETE { <${DOMAIN}/graph/${final_name}> void:triples ${nb}. } INSERT { <${DOMAIN}/graph/${final_name}> void:triples ${new}. } WHERE { <${DOMAIN}/graph/${final_name}> void:triples ${nb}. };"
+            #fi
+        #fi
        
 
         
@@ -238,6 +238,7 @@ for graph in ${graph_list[@]}; do
      if [[ ! $graph =~ $pat4 ]]; then
         echo "<$graph>"
         echo "----  GRAPH STATS";
+        run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <$graph> void:triples ?no . } WHERE { SELECT (COUNT(*) AS ?no) { ?s ?p ?o } };"
         run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <$graph> void:entities ?no .} WHERE { SELECT COUNT(distinct ?s) AS ?no  FROM <$graph> { ?s a [] } };"
         run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <$graph> void:classes ?no .} WHERE { SELECT COUNT(distinct ?o) AS ?no  FROM <$graph> { ?s rdf:type ?o } };"
         run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <$graph> void:properties ?no .} WHERE { SELECT COUNT(distinct ?p) AS ?no  FROM <$graph> { ?s ?p ?o } };"
