@@ -17,6 +17,7 @@ services:
        dockerfile: Dockerfile
     environment:
       STORE_DATA_DIR: /usr/share/proj
+      DATABASE_DIR: ${VIRTUOSO_DATABASE_DIR}
       STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
       STORE_ISQL_PORT: 1111
       DATA_DIR: /root/data
