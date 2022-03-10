@@ -10,7 +10,7 @@ services:
     volumes:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
-      - ./dbpedia-loader/dbpedia_fr-metadata.ttl:/usr/share/proj/meta
+      - ./dbpedia-loader/dbpedia_fr-metadata.ttl:/usr/share/proj/meta/
   load:
     build :
        context: ./dbpedia-loader
