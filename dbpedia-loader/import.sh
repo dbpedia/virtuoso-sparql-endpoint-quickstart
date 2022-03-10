@@ -303,5 +303,5 @@ echo "[INFO] update of lookup tables"
 run_virtuoso_cmd 'urilbl_ac_init_db();'
 run_virtuoso_cmd 's_rank();'
 
-rm "${DATABASE_DIR}/loader_locker.lck";
+rm "/opt/virtuoso-opensource/database/loader_locker.lck";
 
