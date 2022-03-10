@@ -3,10 +3,16 @@ bin="isql-vt"
 host="store"
 port=$STORE_ISQL_PORT
 user="dba"
-lastUpdate=`head -n 1 $current_fileUPDT`;
-echo "============== WE GET THE LAST UPDATE : $lastUpdate";
+#lastUpdate=`head -n 1 $current_fileUPDT`;
+#echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
 touch ${VIRTUOSO_DATABASE_DIR}/loader_locker.lck;
+
+if [ -f "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck" ]; then  
+echo "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck exist "  
+else
+echo "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck PB"
+fi  
 
 run_virtuoso_cmd () {
  VIRT_OUTPUT=`echo "$1" | "$bin" -H "$host" -S "$port" -U "$user" -P "$STORE_DBA_PASSWORD" 2>&1`
