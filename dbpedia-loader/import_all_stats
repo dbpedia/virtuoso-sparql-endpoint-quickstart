@@ -55,6 +55,7 @@ test_connection () {
 echo "[INFO] Waiting for download to finish..."
 wait_for_download
 
+
 echo "will use ISQL port $STORE_ISQL_PORT to connect"
 echo "[INFO] Waiting for store to come online (${STORE_CONNECTION_TIMEOUT}s)"
 : ${STORE_CONNECTION_TIMEOUT:=60}
@@ -67,10 +68,15 @@ fi
 echo "[INFO] Setting 'dbp_decode_iri' registry entry to 'on'"
 run_virtuoso_cmd "registry_set ('dbp_decode_iri', 'on');"
 
+echo "[INFO] CREATE DEFAULT GRAPH AND LIVE SUBGRAPHS'"
+run_virtuoso_cmd "DB.DBA.RDF_GRAPH_GROUP_CREATE ('${DOMAIN}',1);"
+
+run_virtuoso_cmd "DB.DBA.RDF_GRAPH_GROUP_INS ('${DOMAIN}','${DOMAIN}/graph/metadata');"
 echo "[INFO] ADD META DATA"
 run_virtuoso_cmd "DB.DBA.TTLP_MT (file_to_string_output ('${STORE_DATA_DIR}/meta/dbpedia_fr-metadata.ttl'), '', '${DOMAIN}/graph/metadata');" 
 rm -rf ${STORE_DATA_DIR}/meta/
 rm -rf ${DATA_DIR}/meta/
+
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
 run_virtuoso_cmd "registry_set ('dbp_domain', '${DOMAIN}');"
@@ -192,6 +198,7 @@ do
        
 
         
+        run_virtuoso_cmd "DB.DBA.RDF_GRAPH_GROUP_INS ('${DOMAIN}','${DOMAIN}/graph/${final_name}');"
         run_virtuoso_cmd "SPARQL INSERT INTO <${DOMAIN}/graph/metadata> {  <${DOMAIN}/graph/${final_name}> void:dataDump <http://prod-dbpedia.inria.fr/dumps/lastUpdate/$fn> };"
         fi
     fi;
