@@ -23,7 +23,7 @@ run_virtuoso_cmd () {
 }
 
 wait_for_download() {
-  sleep 10
+  sleep 100
   while [ -f "${DATA_DIR}/download.lck" ]; do
     sleep 1
   done
@@ -57,7 +57,7 @@ wait_for_download
 
 echo "will use ISQL port $STORE_ISQL_PORT to connect"
 echo "[INFO] Waiting for store to come online (${STORE_CONNECTION_TIMEOUT}s)"
-: ${STORE_CONNECTION_TIMEOUT:=60}
+: ${STORE_CONNECTION_TIMEOUT:=100}
 test_connection "${STORE_CONNECTION_TIMEOUT}"
 if [ $? -eq 2 ]; then
    echo "[ERROR] store not reachable"
@@ -236,8 +236,9 @@ resp=$(run_virtuoso_cmd "$get_named_graph");
 graph_list=$(echo $resp | tr " " "\n" | grep -E "\/graph\/");
 echo "---->>> COMPUTE FOR EACH GRAPH STATS"
 pat4='metadata'
+pat5='wikidata'
 for graph in ${graph_list[@]}; do
-     if [[ ! $graph =~ $pat4 ]]; then
+     if [[ ! $graph =~ $pat4 ]] &&  [[ ! $entry =~ $pat5 ]]; then
         echo "<$graph>"
         echo "----  GRAPH STATS";
         run_virtuoso_cmd "SPARQL PREFIX void: <http://rdfs.org/ns/void#> INSERT INTO <${DOMAIN}/graph/metadata> { <$graph> void:triples ?no . } WHERE { SELECT (COUNT(*) AS ?no) { ?s ?p ?o } };"
