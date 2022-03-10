@@ -10,8 +10,5 @@ RUN apt-get install -y git virtuoso-opensource pigz pbzip2 bzip2
 ADD import.sh /
 RUN chmod +x /import.sh
 
-ADD dbpedia_fr-metadata.ttl /
-RUN chmod +x /dbpedia_fr-metadata.ttl
-
 
 ENTRYPOINT /bin/bash import.sh 
