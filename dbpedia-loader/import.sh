@@ -6,12 +6,12 @@ user="dba"
 #lastUpdate=`head -n 1 $current_fileUPDT`;
 #echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
-touch ${VIRTUOSO_DATABASE_DIR}/loader_locker.lck;
+touch ${DATABASE_DIR}/loader_locker.lck;
 
-if [ -f "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck" ]; then  
-echo "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck exist "  
+if [ -f "${DATABASE_DIR}/loader_locker.lck" ]; then  
+echo "${DATABASE_DIR}/loader_locker.lck exist "  
 else
-echo "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck PB"
+echo "${DATABASE_DIR}/loader_locker.lck PB"
 fi  
 
 run_virtuoso_cmd () {
@@ -303,5 +303,5 @@ echo "[INFO] update of lookup tables"
 run_virtuoso_cmd 'urilbl_ac_init_db();'
 run_virtuoso_cmd 's_rank();'
 
-rm "${VIRTUOSO_DATABASE_DIR}/loader_locker.lck";
+rm "${DATABASE_DIR}/loader_locker.lck";
 
