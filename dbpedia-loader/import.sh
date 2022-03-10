@@ -6,12 +6,12 @@ user="dba"
 #lastUpdate=`head -n 1 $current_fileUPDT`;
 #echo "============== WE GET THE LAST UPDATE : $lastUpdate";
 
-touch ${DATABASE_DIR}/loader_locker.lck;
+touch /opt/virtuoso-opensource/database/loader_locker.lck;
 
-if [ -f "${DATABASE_DIR}/loader_locker.lck" ]; then  
-echo "${DATABASE_DIR}/loader_locker.lck exist "  
+if [ -f "/opt/virtuoso-opensource/database/loader_locker.lck" ]; then  
+echo "/opt/virtuoso-opensource/database/loader_locker.lck exist "  
 else
-echo "${DATABASE_DIR}/loader_locker.lck PB"
+echo "/opt/virtuoso-opensource/database/loader_locker.lck PB"
 fi  
 
 run_virtuoso_cmd () {
