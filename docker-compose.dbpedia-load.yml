@@ -7,12 +7,14 @@ services:
     environment:
             DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
     restart: always
+    command :
+      - /bin/bash
+      - -c
+      - |
+      - cp ./dbpedia-loader/dbpedia_fr-metadata.ttl ${DATA_DIR}/meta/dbpedia_fr-metadata.ttl
     volumes:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
-      - type: bind
-        source: ./dbpedia-loader/dbpedia_fr-metadata.ttl
-        target: /usr/share/proj/meta/dbpedia_fr-metadata.ttl
   load:
     build :
        context: ./dbpedia-loader
