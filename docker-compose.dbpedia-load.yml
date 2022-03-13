@@ -11,7 +11,7 @@ services:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
       - type: bind
-        source: ./dbpedia_fr-metadata.ttl
+        source: ./dbpedia-loader/dbpedia_fr-metadata.ttl
         target: /usr/share/proj/meta/dbpedia_fr-metadata.ttl
   load:
     build :
