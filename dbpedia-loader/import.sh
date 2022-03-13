@@ -5,6 +5,11 @@ port=$STORE_ISQL_PORT
 user="dba"
 #lastUpdate=`head -n 1 $current_fileUPDT`;
 #echo "============== WE GET THE LAST UPDATE : $lastUpdate";
+if [ -f "${STORE_DATA_DIR}/meta_base/dbpedia_fr-metadata.ttl" ]; then  
+echo "metafile exist"  
+else
+echo "metafile PB"
+fi  
 
 touch /opt/virtuoso-opensource/database/loader_locker.lck;
 
