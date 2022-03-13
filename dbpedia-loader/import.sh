@@ -78,9 +78,8 @@ run_virtuoso_cmd "DB.DBA.RDF_GRAPH_GROUP_INS ('${DOMAIN}','${DOMAIN}/graph/metad
 
 
 echo "[INFO] ADD META DATA"
-run_virtuoso_cmd "DB.DBA.TTLP_MT (file_to_string_output ('${STORE_DATA_DIR}/meta/dbpedia_fr-metadata.ttl'), '', '${DOMAIN}/graph/metadata');" 
-rm -rf ${STORE_DATA_DIR}/meta/
-rm -rf ${DATA_DIR}/meta/
+run_virtuoso_cmd "DB.DBA.TTLP_MT (file_to_string_output ('/usr/share/proj/meta/dbpedia_fr-metadata.ttl'), '', '${DOMAIN}/graph/metadata');" 
+rm -rf /usr/share/proj/meta/dbpedia_fr-metadata.ttl
 
 echo "[INFO] Setting 'dbp_domain' registry entry to ${DOMAIN}"
 run_virtuoso_cmd "registry_set ('dbp_domain', '${DOMAIN}');"
