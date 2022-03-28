@@ -1,0 +1,32 @@
+version: '3'
+services:
+ 
+  store:
+    image: openlink/virtuoso-opensource-7
+    ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
+    environment:
+            DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+    restart: always
+    volumes:
+      - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
+      - ${DATA_DIR}:/usr/share/proj
+  load:
+    build :
+       context: ./dbpedia-loader
+       dockerfile: Dockerfile
+    environment:
+      STORE_DATA_DIR: /usr/share/proj
+      DATABASE_DIR: ${VIRTUOSO_DATABASE_DIR}
+      STORE_DBA_PASSWORD: ${VIRTUOSO_ADMIN_PASSWD}
+      STORE_ISQL_PORT: 1111
+      DATA_DIR: /root/data
+      DOMAIN: ${DOMAIN}
+      fileUPDT: ${fileUPDT}
+      DBP_LANG: ${DBP_LANG}
+      DBP_CATEGORY: ${DBP_CATEGORY}
+    volumes:
+      - ${DATA_DIR}:/root/data
+      - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
+      
+    links:
+      - store
