@@ -54,8 +54,7 @@ Running `docker-compose up` will use the environment variables specified in the 
 
 * `VIRTUOSO_DIR`: The directory that stores the content of the virtuoso triple store.
 
-* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use the *Latest Core Collection* 
-  (https://databus.dbpedia.org/dbpedia/collections/latest-core). You can start the SPARQL endpoint with any other Databus Collection or you can copy the files manually into the `./downloads` folder.
+* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use a [Snapshot Collection (2022-03)](https://databus.dbpedia.org/dbpedia/collections/dbpedia-snapshot-2022-03). You can start the SPARQL endpoint with any other Databus Collection or you can copy the files manually into the `./downloads` folder.
 
 * `DATA_DIR`: The directory containing the loaded data. The download container will download files to this directory. You can also copy files into the directory manually.
 
