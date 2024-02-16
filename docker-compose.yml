@@ -18,8 +18,8 @@ services:
     volumes:
       - ${VIRTUOSO_DATABASE_DIR}:/opt/virtuoso-opensource/database
       - ${DATA_DIR}:/usr/share/proj
-  load:
-    image: dbpedia/virtuoso-sparql-endpoint-quickstart:latest
+  quickstart:
+    build: ./quickstart/
     env_file: config.env
     environment:
       STORE_DATA_DIR: /usr/share/proj
