@@ -18,6 +18,35 @@ run_virtuoso_cmd () {
  fi
 }
 
+install_vad() {
+  local VAD_NAME=$1
+  local VAD_PATHS=(
+    "/opt/virtuoso-opensource/share/virtuoso/vad/${VAD_NAME}"
+    "/opt/virtuoso-opensource/vad/${VAD_NAME}"
+    "/usr/local/virtuoso-opensource/share/virtuoso/vad/${VAD_NAME}"
+    "/usr/share/virtuoso-opensource/vad/${VAD_NAME}"
+  )
+
+  for path in "${VAD_PATHS[@]}"; do
+    echo "[INFO] Attempting to install VAD package '${VAD_NAME}' from '${path}'"
+    local OUTPUT
+    OUTPUT=$(run_virtuoso_cmd "vad_install('${path}', 0);")
+    echo "$OUTPUT"
+
+    if [[ "$OUTPUT" == *"Errors detected"* ]] || [[ "$OUTPUT" == *"result set is empty"* ]]; then
+      echo "[WARN] Installation from '${path}' failed."
+    else
+      # If no errors detected, assume success.
+      # We could double check registry but that might be overkill if error detection is reliable.
+      echo "[INFO] Successfully installed '${VAD_NAME}'"
+      return 0
+    fi
+  done
+  
+  echo "[ERROR] Failed to install VAD package '${VAD_NAME}' from any known location."
+  return 1
+}
+
 wait_for_download() {
   sleep 10
   while [ -f "${DATA_DIR}/download.lck" ]; do
@@ -74,7 +103,7 @@ echo "[INFO] Setting 'dbp_category' registry entry to ${DBP_CATEGORY}"
 run_virtuoso_cmd "registry_set ('dbp_category', '${DBP_CATEGORY}');"
 
 echo "[INFO] Installing VAD package 'dbpedia_dav.vad'"
-run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0);"
+install_vad "dbpedia_dav.vad"
 
 #ensure that all supported formats get into the load list
 #(since we have to excluse graph-files *.* won't do the trick
