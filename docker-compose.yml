@@ -1,14 +1,40 @@
 version: '3'
 services:
   download:
-    image: dbpedia/dbpedia-databus-collection-downloader:latest
-    env_file: config.env   
+    image: dbpedia/databus-python-client:latest
+    env_file: config.env
     environment:
       COLLECTION_URI: ${COLLECTION_URI}
-      TARGET_DIR: /root/data
+      DATABUS_URI: ${DATABUS_URI}
       SPARQL_ENDPOINT: ${SPARQL_ENDPOINT}
+      GRAPH_MODE: ${GRAPH_MODE}
     volumes:
       - ${DATA_DIR}:/root/data
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        set -e
+        touch /root/data/download.lck
+        trap 'rm -f /root/data/download.lck' EXIT
+
+        uris=""
+        if [ -n "$$COLLECTION_URI" ]; then uris="$$uris $$COLLECTION_URI"; fi
+        if [ -n "$$DATABUS_URI" ]; then uris="$$uris $$DATABUS_URI"; fi
+        if [ -z "$$uris" ]; then
+          echo "[ERROR] Set COLLECTION_URI, DATABUS_URI, or both."
+          exit 1
+        fi
+
+        databus_args=""
+        if [ -n "$$SPARQL_ENDPOINT" ]; then
+          databus_args="--databus $$SPARQL_ENDPOINT"
+        fi
+
+        databusclient download $$uris \
+          --localdir /root/data \
+          $$databus_args \
+          --graph-mode "$$GRAPH_MODE"
   store:
     image: openlink/virtuoso-opensource-7
     ports: ["${VIRTUOSO_HTTP_PORT}:8890","127.0.0.1:${VIRTUOSO_ISQL_PORT}:1111"]
