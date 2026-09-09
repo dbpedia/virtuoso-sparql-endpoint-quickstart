@@ -1,6 +1,6 @@
 # Virtuoso SPARQL Endpoint Quickstart
 
-Creates and runs a Virtuoso Open Source instance including a SPARQL endpoint preloaded with a Databus Collection and the VOS DBpedia Plugin installed.
+Creates and runs a Virtuoso Open Source instance including a SPARQL endpoint preloaded with Databus data and the VOS DBpedia Plugin installed.
 
 ## Quickstart
 
@@ -34,7 +34,7 @@ Note that this collection is only a collection of RDF data to test drive the doc
 The Virtuoso SPARQL Endpoint Quickstart is a network of three different docker containers which are launched with docker-compose. The following containers are being run:
 
 * OpenLink VOS Instance ([openlink/virtuoso-opensource-7](https://hub.docker.com/r/openlink/virtuoso-opensource-7))
-* DBpedia Databus Collection Downloader ([dbpedia/dbpedia-databus-collection-downloader](https://hub.docker.com/repository/docker/dbpedia/dbpedia-databus-collection-downloader))
+* DBpedia Databus Python Client ([dbpedia/databus-python-client](https://hub.docker.com/r/dbpedia/databus-python-client))
 * Loader/Installer ([dbpedia/virtuoso-sparql-endpoint-quickstart](https://hub.docker.com/repository/docker/dbpedia/virtuoso-sparql-endpoint-quickstart))
 
 Once the loading process has been completed, only the OpenLink VOS Instance will keep running. The other two containers will shut down once their job is done. By running `docker ps` you can see whether the download and loader container are still running. If there is only the OpenLink VOS Instance remaining, all your data has been loaded to the triple store.
@@ -54,9 +54,11 @@ Running `docker-compose up` will use the environment variables specified in the 
 
 * `VIRTUOSO_DIR`: The directory that stores the content of the virtuoso triple store.
 
-* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use a [Snapshot Collection (2022-03)](https://databus.dbpedia.org/dbpedia/collections/dbpedia-snapshot-2022-03). You can start the SPARQL endpoint with any other Databus Collection or you can copy the files manually into the `./downloads` folder.
+* `COLLECTION_URI`: The URI of a Databus Collection. If you want to load the DBpedia Dataset it is recommended to use a [Snapshot Collection (2022-03)](https://databus.dbpedia.org/dbpedia/collections/dbpedia-snapshot-2022-03). This variable is kept for backward compatibility.
 
-* `DATA_DIR`: The directory containing the loaded data. The download container will download files to this directory. You can also copy files into the directory manually.
+* `DATABUS_URI`: Optional additional Databus URI to download. This can be a Databus file, version, artifact, group, or collection supported by `databusclient download`. If both `COLLECTION_URI` and `DATABUS_URI` are set, both are handed to the download client.
+
+* `DATA_DIR`: The directory containing the loaded data. The download container will download files below this directory using the Databus path layout (`account/group/artifact/version/file`). You can also copy files into the directory manually.
 
 * `DOMAIN`: The domain of your resource identifiers. This variable is only required if you intend to access the HTML view of your resources (e.g. if you want to run a DBpedia Chapter). The HTML view will only show correct views for identifiers in the specified domain. 
   (e.g. set this to http://ru.dbpedia.org when running the Russian chapter with Russian resource identifiers)
@@ -85,11 +87,16 @@ The second volume specified in the docker-compose file connects the downloads fo
 accessible by the virtuoso load script. Accessible paths are set in the internal `virtuoso.ini` file (`DirsAllowed`). As the
 docker-compose uses the vanilla settings of the image the local `./downloads` folder is mounted to `/usr/share/proj` inside of the container which is in the `DirsAllowed` per default.
 
-#### Container 2: DBpedia Databus Collection Downloader
+#### Container 2: DBpedia Databus Python Client
 
-This project uses the DBpedia Databus Collection Downloader. You can find the documentation [here](https://github.com/dbpedia/dbpedia-databus-collection-downloader). If you haven't already, download and build the download client docker image. The required environment variables are:
+This project uses the DBpedia Databus Python Client. You can find the documentation [here](https://github.com/dbpedia/databus-python-client). The required environment variables are:
 
-* `TARGET_DIR`: The target directory for the downloaded files (inside of the container). Make sure that the directory is mounted to a local folder to access the files in the docker network.
+* `COLLECTION_URI`: Backward-compatible Databus Collection URI.
+* `DATABUS_URI`: Optional additional Databus URI. Set this when you want to download something other than, or in addition to, a collection.
+* `SPARQL_ENDPOINT`: The Databus SPARQL endpoint used to resolve collections and queries.
+* `GRAPH_MODE`: Defaults to `download-url`. The download client writes `<file>.graph` sidecars containing the original download URL; these files are used by the Virtuoso loading process.
+
+The Python client stores files in a nested Databus layout below `DATA_DIR`. The loader registers files recursively with Virtuoso, so this layout does not need to be flattened. Keeping the hierarchy avoids filename collisions when different artifacts or versions contain files with the same basename.
 
 #### Container 3: Loader/Installer
 
@@ -137,7 +144,6 @@ isql-v -U dba -P [virtuoso_admin_password]
 grant SPARQL_LOAD_SERVICE_DATA to "SPARQL";
 grant SPARQL_SPONGE to "SPARQL";
 ```
-
 
 
 

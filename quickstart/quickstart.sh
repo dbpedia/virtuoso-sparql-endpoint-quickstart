@@ -80,8 +80,8 @@ run_virtuoso_cmd "vad_install('/opt/virtuoso-opensource/vad/dbpedia_dav.vad', 0)
 #(since we have to excluse graph-files *.* won't do the trick
 echo "[INFO] registring RDF documents for import"
 for ext in nt nq owl rdf trig ttl xml gz bz2 bzip2; do
- echo "[INFO] ${STORE_DATA_DIR}/*.${ext} for import"
- run_virtuoso_cmd "ld_dir ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
+ echo "[INFO] ${STORE_DATA_DIR}/**/*.${ext} for import"
+ run_virtuoso_cmd "ld_dir_all ('${STORE_DATA_DIR}', '*.${ext}', '${DOMAIN}');"
 done
 
 echo "[INFO] deactivating auto-indexing"
@@ -110,4 +110,3 @@ run_virtuoso_cmd 'rdf_geo_fill();'
 echo "[INFO] making checkpoint..."
 run_virtuoso_cmd 'checkpoint;'
 echo "[INFO] bulk load done; terminating loader"
-
