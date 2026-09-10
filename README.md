@@ -17,7 +17,7 @@ After a short delay your SPARQL endpoint will be running at [localhost:8890/spar
 Note that loading huge datasets to the Virtuoso triple store takes some time. Even though the SPARQL endpoint is up and running, the loading process might still take up to several hours depending on the amount of data you are trying to load. 
 
 In order to verify your setup more quickly you can use the following collection URI instead: 
-[https://databus.dbpedia.org/dbpedia/collections/virtuoso-sparql-endpoint-quickstart-preview](https://databus.dbpedia.org/dbpedia/collections/virtuoso-sparql-endpoint-quickstart-preview)
+[https://databus.dbpedia.org/janfo/collections/quickstart-test](https://databus.dbpedia.org/janfo/collections/quickstart-test)
 
 Note that this collection is only a collection of RDF data to test drive the docker compose network and not a DBpedia release. After a short delay the resource [http://localhost:8890/page/Berlin](http://localhost:8890/page/Berlin) should be accessible. 
 
@@ -144,7 +144,3 @@ isql-v -U dba -P [virtuoso_admin_password]
 grant SPARQL_LOAD_SERVICE_DATA to "SPARQL";
 grant SPARQL_SPONGE to "SPARQL";
 ```
-
-
-
-
